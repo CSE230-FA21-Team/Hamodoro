@@ -13,21 +13,27 @@ The Pomodoro Technique is a time management method developed in the late 1980s. 
 ## Goals/Features
 
 + Countdown Timer (clock analog or digital)
+
 There will be a countdown timer on the screen, which will start counting down when we set the session time and start the timer. At this point of time, we have two plans for the timer. One is to work out a clock analog with clock hands, and the other is to use a digital representation. We will choose the one that works better.
 
 + Self-defined Session Title
+
 When we set a session, besides the start time and duration time, we can also input a title for that session. The title can be shown in the schedule table for the session, so that it will be much easier to check the arrangement of a day.
 
 + Notification
+
 Working for a long period of time is ineffective and taking a rest is also an important part of the users’ work. At the end of each Pomodoro session, a notification will be pushed to congratulate the users on the completion of a session and to remind them to take a rest. 
 	
 + Schedule Visualization
+
 We also integrate our Pomodoro clock with the user's calendar schedule so that the users can see their day at glance to plan ahead and take better advantage of the Pomodoro clock. The calendar will be present beside the timer and the users can type their schedule of the day into this calendar. 
 
 + Notes during Session
+
 During a focus session, users will be able to write down their notes and thoughts in the “Notes” section of the app. The notes will be shown in the calendar for later review, and stored locally as plain text files. We will aim for markdown support as a stretch goal.  
 
 + Keyboard Control
+
 Our app will support full keyboard control. We provide keyboard shortcuts to functions like start/pause timer, switch layout, etc.  Due to the limitations of the brick library, most of our shortcuts will be a single letter key without modifiers.
 
 
