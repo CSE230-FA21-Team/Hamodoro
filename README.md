@@ -1,5 +1,5 @@
 # Project
-CSE230 FA21 Final Project: {NAME}
+CSE230 FA21 Final Project: {Pomodoro Timer}
 
 ## Proposal
 
