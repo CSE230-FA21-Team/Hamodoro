@@ -1,5 +1,5 @@
 # Project
-CSE230 FA21 Final Project: Pomodoro Timer
+CSE230 FA21 Final Project: Hamodoro (A Pomodoro Timer in Haskell)
 
 ## Proposal
 
