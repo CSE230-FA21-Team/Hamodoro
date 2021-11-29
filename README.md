@@ -52,5 +52,16 @@ Proposal form: https://forms.gle/Fd4CUajSCzS4Er4e7
 ## Milestones
 - [Milestone 1: Registration and Proposal (#2)](https://github.com/CSE230-FA21-Team/Project/issues/2)
 
+## Milestone 2: Updates
+
+### Key Components
+
+We are presenting a module that includes all features our application supports, including starting/reseting timer, editing/deleting notes, pushing notifications, restarting the whole application, etc. The changes of states are controlled in Actions.hs.
+
+Also, we are implementing our countdown timer as one of our key components. We place a widget on the left, inside which are large numbers showing the remaining time. Another key component is the schedule table on the right, showing all the scheduled tasks with their time spans and notes. There is also a component widget for users to edit tasks. Users can add tasks to the scheduler, and each task has its own title, content, and corresponding duration of time that will be shown on the timer.
+
+Then we are implementing the UI based on the functionalities of our program using the brick library, displaying the necessary contents on the front end to make our application fully functional. We are using the brick library’s ticking function to update the interface every second and on user inputs, and we are also using Brick’s keyboard events to handle shortcuts and editor area text input. 
+
+
 ## License
 The project is open sourced under the terms of BSD 3-Clause License, details of which can be found in the [`LICENSE`](LICENSE) file
