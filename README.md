@@ -62,6 +62,36 @@ Also, we are implementing our countdown timer as one of our key components. We p
 
 Then we are implementing the UI based on the functionalities of our program using the brick library, displaying the necessary contents on the front end to make our application fully functional. We are using the brick library’s ticking function to update the interface every second and on user inputs, and we are also using Brick’s keyboard events to handle shortcuts and editor area text input. 
 
+### Project structure:
+
+∅ tree
+.
+├── app
+│   └── Main.hs
+├── LICENSE
+├── Makefile
+├── package.yaml
+├── README.md
+├── Setup.hs
+├── src
+│   ├── Actions.hs
+│   ├── Config.hs
+│   ├── Lib.hs
+│   └── UI
+│       ├── Editor.hs
+│       ├── Sheet.hs
+│       ├── Stats.hs
+│       └── Style.hs
+├── stack.yaml
+├── stack.yaml.lock
+├── test
+│   └── Spec.hs
+└── hamodoro.cabal
+
+### Challenges
+
+The graph implementation of the clock UI is time consuming. It is hard to implement a round clock face or the ticking clock hands using the Brick library. So in order to implement our functionality, we decided to switch to an easier alternative. We choose to embed all the clock numbers into our code by drawing number sign strings. The end result of the clock looks like the graph below. It is not only good-looking, but also serves well to show the remaining time.
+
 
 ## License
 The project is open sourced under the terms of BSD 3-Clause License, details of which can be found in the [`LICENSE`](LICENSE) file
