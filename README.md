@@ -64,29 +64,7 @@ Then we are implementing the UI based on the functionalities of our program usin
 
 ### Project structure:
 
-∅ tree
-.
-├── app
-│   └── Main.hs
-├── LICENSE
-├── Makefile
-├── package.yaml
-├── README.md
-├── Setup.hs
-├── src
-│   ├── Actions.hs
-│   ├── Config.hs
-│   ├── Lib.hs
-│   └── UI
-│       ├── Editor.hs
-│       ├── Sheet.hs
-│       ├── Stats.hs
-│       └── Style.hs
-├── stack.yaml
-├── stack.yaml.lock
-├── test
-│   └── Spec.hs
-└── hamodoro.cabal
+
 
 ### Challenges
 
