@@ -64,7 +64,33 @@ Then we are implementing the UI based on the functionalities of our program usin
 
 ### Project structure
 
+```
+∅ tree                           
+.
+├── LICENSE
+├── Makefile
+├── README.md
+├── Setup.hs
+├── app
+│   └── Main.hs
+├── hamodoro.cabal
+├── package.yaml
+├── src
+│   ├── Control.hs
+│   ├── Main.hs
+│   ├── Model
+│   │   ├── Board.hs
+│   │   ├── Player.hs
+│   │   └── Score.hs
+│   ├── Model.hs
+│   └── View.hs
+├── stack.yaml
+├── stack.yaml.lock
+└── test
+    └── Spec.hs
 
+4 directories, 17 files
+```
 
 ### Challenges
 
