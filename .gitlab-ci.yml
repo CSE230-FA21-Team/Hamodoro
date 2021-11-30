@@ -1,0 +1,19 @@
+image: haskell:9
+
+default:
+  tags:
+    - unwalled
+    - docker
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - stack setup
+    - stack build
+  cache:
+    key: stack-cache
+    paths:
+      - .stack-work/
