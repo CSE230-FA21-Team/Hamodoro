@@ -96,6 +96,16 @@ Then we are implementing the UI based on the functionalities of our program usin
 
 The graph implementation of the clock UI is time consuming. It is hard to implement a round clock face or the ticking clock hands using the Brick library. So in order to implement our functionality, we decided to switch to an easier alternative. We choose to embed all the clock numbers into our code by drawing number sign strings. The end result of the clock looks like the graph below. It is not only good-looking, but also serves well to show the remaining time.
 
+```
+ ######   ######  ########     #######   #######    #####
+##    ## ##    ## ##          ##     ## ##     ##  ##   ##
+##       ##       ##                 ##        ## ##     ##
+##        ######  ######       #######   #######  ##     ##
+##             ## ##          ##               ## ##     ##
+##    ## ##    ## ##          ##        ##     ##  ##   ##
+ ######   ######  ########    #########  #######    #####
+```
+
 ### Do you expect to meet your goals until the deadline?
 
 Yes.
