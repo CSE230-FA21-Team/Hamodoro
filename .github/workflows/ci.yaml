@@ -14,7 +14,6 @@ jobs:
 
       - name: Check formatting
         uses: mrkkrp/ormolu-action@v1
-        continue-on-error: true
 
       - name: Set up hlint
         uses: rwe/actions-hlint-setup@v1
@@ -23,10 +22,9 @@ jobs:
 
       - name: Run hlint
         uses: rwe/actions-hlint-run@v2
-        continue-on-error: true
         with:
           path: src/
-          fail-on: warning
+          fail-on: error
 
       - name: Cache ~/.stack folder
         uses: actions/cache@v2
