@@ -62,13 +62,21 @@ Also, we are implementing our countdown timer as one of our key components. We p
 
 Then we are implementing the UI based on the functionalities of our program using the brick library, displaying the necessary contents on the front end to make our application fully functional. We are using the brick library’s ticking function to update the interface every second and on user inputs, and we are also using Brick’s keyboard events to handle shortcuts and editor area text input. 
 
-### Project structure:
+### Project structure
 
 
 
 ### Challenges
 
 The graph implementation of the clock UI is time consuming. It is hard to implement a round clock face or the ticking clock hands using the Brick library. So in order to implement our functionality, we decided to switch to an easier alternative. We choose to embed all the clock numbers into our code by drawing number sign strings. The end result of the clock looks like the graph below. It is not only good-looking, but also serves well to show the remaining time.
+
+### Do you expect to meet your goals until the deadline?
+
+Yes.
+
+### If not, how will you modify your goals?
+
+It is likely that we will meet our goals, but if there is not enough time, we may replace the clock UI with a countdown progress bar as provided in Brick.Widgets.ProgressBar. This plan B will still serve as a visualization of the amount of time remaining in the current cycle of task. 
 
 
 ## License
