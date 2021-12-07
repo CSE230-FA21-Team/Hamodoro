@@ -20,10 +20,16 @@ jobs:
         with:
           version: "3.2.7"
 
-      - name: Run hlint
+      - name: Run hlint on src
         uses: rwe/actions-hlint-run@v2
         with:
           path: src/
+          fail-on: error
+
+      - name: Run hlint on src_btt
+        uses: rwe/actions-hlint-run@v2
+        with:
+          path: src_btt/
           fail-on: error
 
       - name: Cache ~/.stack folder

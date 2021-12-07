@@ -23,6 +23,8 @@ source-repository head
   location: https://github.com/CSE230-FA21-Team/Hamodoro
 
 library
+  exposed-modules:
+      Model
   other-modules:
       Paths_hamodoro
   hs-source-dirs:
