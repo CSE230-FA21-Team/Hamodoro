@@ -65,3 +65,7 @@ jobs:
       - name: Build project
         run: |
           stack build
+
+      - name: Run tests
+        run: |
+          stack test --fast
