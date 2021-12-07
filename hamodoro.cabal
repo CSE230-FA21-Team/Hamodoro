@@ -1,4 +1,4 @@
-cabal-version: 1.12
+cabal-version: 2.0
 
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
@@ -23,6 +23,28 @@ source-repository head
   location: https://github.com/CSE230-FA21-Team/Hamodoro
 
 library
+  other-modules:
+      Paths_hamodoro
+  hs-source-dirs:
+      src
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , brick
+    , bytestring
+    , containers
+    , directory
+    , microlens
+    , random
+    , req
+    , text
+    , text-zipper
+    , time
+    , tomland
+    , vty
+  default-language: Haskell2010
+
+library brick-tac-toe
   exposed-modules:
       Control
       Main
@@ -34,7 +56,7 @@ library
   other-modules:
       Paths_hamodoro
   hs-source-dirs:
-      src
+      src_btt
   build-depends:
       aeson
     , base >=4.7 && <5
@@ -63,10 +85,10 @@ executable hamodoro
       aeson
     , base >=4.7 && <5
     , brick
+    , brick-tac-toe
     , bytestring
     , containers
     , directory
-    , hamodoro
     , microlens
     , random
     , req
