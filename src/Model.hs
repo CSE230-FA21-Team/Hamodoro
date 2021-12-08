@@ -8,7 +8,7 @@ module Model
     State (..),
     Tick (..),
     Task (..),
-    editor,
+    editor
   )
 where
 
@@ -62,10 +62,16 @@ data Panel
 data Task = Task
   { title :: String,
     notes :: String,
-    duration :: Float,
-    startTime :: ZonedTime,
-    endTime :: ZonedTime
+    duration :: Int
+    --startTime :: ZonedTime,
+    --endTime :: ZonedTime
   }
 
 editor :: Lens' State (E.Editor String Widget)
 editor f s = (\x -> s {_editor = x}) <$> f (_editor s)
+
+--editorN :: Lens' State (E.Editor String Widget)
+--editorN f s = (\x -> s {_editorN = x}) <$> f (_editorN s)
+
+--editorD :: Lens' State (E.Editor String Widget)
+--editorD f s = (\x -> s {_editorD = x}) <$> f (_editorD s)

@@ -11,6 +11,7 @@ import Brick hiding (Result)
 --   )
 
 import Brick.BChan (BChan, writeBChan)
+import Data.List (find, intercalate)
 import qualified Brick.Main as M
   ( App (..),
     appAttrMap,
@@ -23,7 +24,7 @@ import qualified Brick.Main as M
     halt,
     showFirstCursor,
   )
-import qualified Brick.Types as T (BrickEvent (..), EventM, handleEventLensed)
+import qualified Brick.Types as T (BrickEvent (..), EventM, Next, handleEventLensed)
 import qualified Brick.Widgets.Edit as E
   ( applyEdit,
     editor,
@@ -34,25 +35,42 @@ import Config (Config)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Time.Clock (DiffTime, UTCTime, diffUTCTime, getCurrentTime, utctDay)
 import qualified Graphics.Vty as V
+import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
 import Lib
-import Model
+import Model 
+-- import qualified UI.Editor as Editor (render)
 
 -- import Model.Player
 
 -------------------------------------------------------------------------------
 
-control :: State -> BrickEvent n Tick -> EventM n (Next State)
-control s ev = case ev of
+control :: State -> T.BrickEvent Model.Widget Tick -> EventM Model.Widget (T.Next State)
+control s@State {panel = p} (T.VtyEvent ev) = 
+  case (p, ev) of
   --   AppEvent Tick -> nextS s =<< liftIO (play O s)
-  AppEvent Tick -> M.continue =<< liftIO (autoRefresh s)
+  -- AppEvent Tick -> M.continue =<< liftIO (autoRefresh s)
   -- AppEvent s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
-  T.VtyEvent (V.EvKey V.KEsc _) -> Brick.halt s
-  _ -> Brick.continue s -- Brick.halt s
+    (Editor, V.EvKey V.KEsc _) -> M.halt s
+    (Editor, V.EvKey V.KEnter _) -> M.continue =<< liftIO (save s)
+    (Editor, _) -> M.continue =<< edit s ev
+control s _ = M.continue s -- Brick.halt s
 
 edit :: State -> V.Event -> T.EventM Model.Widget State
 edit s = T.handleEventLensed s editor E.handleEditorEvent
 
---  save :: State -> IO State
+save :: State -> IO State
+save s@State {tasks = ts, _editor = ed} = do 
+  pure $ s {tasks = ts ++ [t]}
+  where title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed 
+        t = Task {
+          title = title1,
+          notes = "",
+          duration = 0
+        }
+    --startTime = zoneT,
+    --endTime = zoneT}
+
+
 
 autoRefresh :: State -> IO State
 autoRefresh s = do
