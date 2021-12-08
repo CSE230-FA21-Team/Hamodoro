@@ -24,12 +24,13 @@ source-repository head
 
 library
   exposed-modules:
+      Config
       Control
-      Main
+      Lib
+      Lib.Digit
       Model
-      Model.Board
-      Model.Player
-      Model.Score
+      UI.Editor
+      UI.Schedule
       View
   other-modules:
       Paths_hamodoro
@@ -93,6 +94,7 @@ test-suite hamodoro-test
     , containers
     , directory
     , hamodoro
+    , hspec
     , microlens
     , random
     , req
