@@ -27,6 +27,7 @@ library
       Config
       Control
       Lib
+      Lib.Digit
       Model
       UI.Editor
       UI.Schedule
