@@ -62,7 +62,7 @@ data Panel
 data Task = Task
   { title :: String,
     notes :: String,
-    duration :: Float,
+    duration :: Int,
     startTime :: ZonedTime,
     endTime :: ZonedTime
   }

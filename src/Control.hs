@@ -33,9 +33,16 @@ import qualified Brick.Widgets.Edit as E
 import Config (Config)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Time.Clock (DiffTime, UTCTime, diffUTCTime, getCurrentTime, utctDay)
+import Data.Time.LocalTime (ZonedTime(..), getZonedTime)
 import qualified Graphics.Vty as V
 import Lib
 import Model
+    ( Task(..),
+      Panel(Editor),
+      Widget(..),
+      State(..),
+      Tick(..),
+      editor )
 
 -- import Model.Player
 
@@ -65,14 +72,31 @@ autoRefresh s = do
 syncFetch :: Config -> IO (BChan Tick -> State)
 syncFetch c = do
   d <- getCurrentTime
+  zoneT <- getZonedTime
   pure $ \q ->
     State
       { config = c,
         panel = Editor,
         _editor = E.editor Default Nothing (renderNotes $ ""),
         now = d,
-        day = undefined,
-        tasks = []
+        day = (utctDay d),
+        -- TODO: change tasks back to []
+        tasks = [
+          Task {
+            title = "test task 1", 
+            notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+            duration = 20,
+            startTime = zoneT,
+            endTime = zoneT
+          },
+          Task {
+            title = "test task 2", 
+            notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque e",
+            duration = 20,
+            startTime = zoneT,
+            endTime = zoneT
+          }
+        ]
       }
 
 renderNotes :: String -> String
