@@ -27,6 +27,7 @@ library
       Config
       Control
       Lib
+      Lib.Digit
       Model
       UI.Editor
       UI.Schedule
@@ -93,6 +94,7 @@ test-suite hamodoro-test
     , containers
     , directory
     , hamodoro
+    , hspec
     , microlens
     , random
     , req
