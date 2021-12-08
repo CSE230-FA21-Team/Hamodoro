@@ -33,16 +33,17 @@ import qualified Brick.Widgets.Edit as E
 import Config (Config)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Time.Clock (DiffTime, UTCTime, diffUTCTime, getCurrentTime, utctDay)
-import Data.Time.LocalTime (ZonedTime(..), getZonedTime)
+import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
 import qualified Graphics.Vty as V
 import Lib
 import Model
-    ( Task(..),
-      Panel(Editor),
-      Widget(..),
-      State(..),
-      Tick(..),
-      editor )
+  ( Panel (Editor),
+    State (..),
+    Task (..),
+    Tick (..),
+    Widget (..),
+    editor,
+  )
 
 -- import Model.Player
 
@@ -81,22 +82,22 @@ syncFetch c = do
         now = d,
         day = (utctDay d),
         -- TODO: change tasks back to []
-        tasks = [
-          Task {
-            title = "test task 1", 
-            notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
-            duration = 20,
-            startTime = zoneT,
-            endTime = zoneT
-          },
-          Task {
-            title = "test task 2", 
-            notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque e",
-            duration = 40,
-            startTime = zoneT,
-            endTime = zoneT
-          }
-        ]
+        tasks =
+          [ Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = zoneT,
+                endTime = zoneT
+              },
+            Task
+              { title = "test task 2",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque e",
+                duration = 40,
+                startTime = zoneT,
+                endTime = zoneT
+              }
+          ]
       }
 
 renderNotes :: String -> String
