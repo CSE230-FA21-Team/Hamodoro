@@ -1,5 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
 
+-- Model: Data structures
+
 module Model
   ( Widget (..),
     Panel (..),
@@ -7,7 +9,6 @@ module Model
     Tick (..),
     Task (..),
     editor,
-    syncFetch,
   )
 where
 
@@ -49,33 +50,6 @@ data State = State
     day :: Day,
     tasks :: [Task]
   }
-
-syncFetch :: Config -> IO (BChan Tick -> State)
-syncFetch c = do
-  d <- getCurrentTime
-  pure $ \q ->
-    State
-      { config = c,
-        panel = Editor,
-        _editor = E.editor Default Nothing (renderNotes $ ""),
-        now = d,
-        day = undefined,
-        tasks = []
-      }
-
-renderNotes :: String -> String
-renderNotes = unlines . filter (/= "") . map trimLeft . splitOn ';'
-
-splitOn :: Eq a => a -> [a] -> [[a]]
-splitOn c s =
-  case dropWhile (== c) s of
-    [] -> []
-    s' -> w : splitOn c s''
-      where
-        (w, s'') = break (== c) s'
-
-trimLeft :: String -> String
-trimLeft = dropWhile isSpace
 
 data Widget
   = Default

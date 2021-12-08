@@ -1,3 +1,5 @@
+-- Control: operations and actions
+
 module Control where
 
 import Brick hiding (Result)
@@ -7,6 +9,8 @@ import Brick hiding (Result)
 --   editor,
 --   Widget(..),
 --   )
+
+import Brick.BChan (BChan, writeBChan)
 import qualified Brick.Main as M
   ( App (..),
     appAttrMap,
@@ -26,8 +30,11 @@ import qualified Brick.Widgets.Edit as E
     getEditContents,
     handleEditorEvent,
   )
+import Config (Config)
 import Control.Monad.IO.Class (MonadIO (liftIO))
+import Data.Time.Clock (DiffTime, UTCTime, diffUTCTime, getCurrentTime, utctDay)
 import qualified Graphics.Vty as V
+import Lib
 import Model
 
 -- import Model.Player
@@ -54,3 +61,19 @@ autoRefresh s = do
   --   then refresh s
   --   else pure s
   pure s
+
+syncFetch :: Config -> IO (BChan Tick -> State)
+syncFetch c = do
+  d <- getCurrentTime
+  pure $ \q ->
+    State
+      { config = c,
+        panel = Editor,
+        _editor = E.editor Default Nothing (renderNotes $ ""),
+        now = d,
+        day = undefined,
+        tasks = []
+      }
+
+renderNotes :: String -> String
+renderNotes = unlines . filter (/= "") . map trimLeft . splitOn ';'

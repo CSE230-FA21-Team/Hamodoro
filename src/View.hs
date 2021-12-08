@@ -1,3 +1,5 @@
+-- View: UI, widgets, etc.
+
 module View (drawUI) where
 
 import qualified Brick.Types as T (BrickEvent (..), EventM, Next, Widget)
