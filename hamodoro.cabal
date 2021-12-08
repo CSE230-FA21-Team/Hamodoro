@@ -29,6 +29,7 @@ library
       Lib
       Model
       UI.Editor
+      UI.Schedule
       View
   other-modules:
       Paths_hamodoro

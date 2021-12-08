@@ -92,7 +92,7 @@ syncFetch c = do
           Task {
             title = "test task 2", 
             notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque e",
-            duration = 20,
+            duration = 40,
             startTime = zoneT,
             endTime = zoneT
           }
