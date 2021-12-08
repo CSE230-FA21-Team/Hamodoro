@@ -20,7 +20,7 @@ data Config = Config
 configCodec :: TomlCodec Config
 configCodec =
   Config
-    <$> Toml.string "test_str_2" .= testStr2
+    <$> Toml.string "test_str_1" .= testStr1
     <*> Toml.string "test_str_2" .= testStr2
 
 load :: IO (Either [TomlDecodeError] Config)
