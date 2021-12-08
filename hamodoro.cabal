@@ -94,6 +94,7 @@ test-suite hamodoro-test
     , containers
     , directory
     , hamodoro
+    , hspec
     , microlens
     , random
     , req
