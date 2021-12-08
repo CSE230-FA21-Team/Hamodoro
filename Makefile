@@ -29,8 +29,14 @@ test.watch:
 
 .PHONY: start
 start:
-	stack run
+	stack --system-ghc --no-install-ghc run
 
 .PHONY: lint
 lint:
 	hlint .
+
+.PHONY: fmt
+fmt:
+	ormolu --mode inplace $(git ls-files '*.hs')
+	# this does not work
+

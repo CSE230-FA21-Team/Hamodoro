@@ -2,6 +2,7 @@ module Main where
 
 import Brick
 import Brick.BChan (newBChan, writeBChan)
+import qualified Config as C (load)
 import Control
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (forever)
@@ -16,7 +17,7 @@ import View
 -------------------------------------------------------------------------------
 main :: IO ()
 main = do
-  rounds <- fromMaybe defaultRounds <$> getRounds
+  Right c <- C.load
   chan <- newBChan 10
   forkIO $
     forever $ do
@@ -24,25 +25,16 @@ main = do
       threadDelay 100000 -- decides how fast your game moves
   let buildVty = V.mkVty V.defaultConfig
   initialVty <- buildVty
-  res <- customMain initialVty buildVty (Just chan) app (Model.init rounds)
-  print (psResult res, psScore res)
+  s <- syncFetch c
+  res <- customMain initialVty buildVty (Just chan) app (s chan)
+  print "exit"
 
-app :: App PlayState Tick String
+app :: App State Tick Model.Widget
 app =
   App
-    { appDraw = view,
+    { appDraw = drawUI,
       appChooseCursor = const . const Nothing,
       appHandleEvent = control,
       appStartEvent = return,
       appAttrMap = const (attrMap defAttr [])
     }
-
-getRounds :: IO (Maybe Int)
-getRounds = do
-  args <- getArgs
-  case args of
-    (str : _) -> return (readMaybe str)
-    _ -> return Nothing
-
-defaultRounds :: Int
-defaultRounds = 3

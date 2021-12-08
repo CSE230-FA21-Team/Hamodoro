@@ -24,12 +24,11 @@ source-repository head
 
 library
   exposed-modules:
+      Config
       Control
-      Main
+      Lib
       Model
-      Model.Board
-      Model.Player
-      Model.Score
+      UI.Editor
       View
   other-modules:
       Paths_hamodoro

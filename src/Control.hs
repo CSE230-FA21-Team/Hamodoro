@@ -1,50 +1,79 @@
+-- Control: operations and actions
+
 module Control where
 
 import Brick hiding (Result)
-import qualified Brick.Types as T
+-- ( Tick,
+--   Panel(..),
+--   State(..),
+--   editor,
+--   Widget(..),
+--   )
+
+import Brick.BChan (BChan, writeBChan)
+import qualified Brick.Main as M
+  ( App (..),
+    appAttrMap,
+    appChooseCursor,
+    appDraw,
+    appHandleEvent,
+    appStartEvent,
+    continue,
+    customMain,
+    halt,
+    showFirstCursor,
+  )
+import qualified Brick.Types as T (BrickEvent (..), EventM, handleEventLensed)
+import qualified Brick.Widgets.Edit as E
+  ( applyEdit,
+    editor,
+    getEditContents,
+    handleEditorEvent,
+  )
+import Config (Config)
 import Control.Monad.IO.Class (MonadIO (liftIO))
+import Data.Time.Clock (DiffTime, UTCTime, diffUTCTime, getCurrentTime, utctDay)
 import qualified Graphics.Vty as V
+import Lib
 import Model
-import Model.Board
-import Model.Player
 
 -- import Model.Player
 
 -------------------------------------------------------------------------------
 
-control :: PlayState -> BrickEvent n Tick -> EventM n (Next PlayState)
+control :: State -> BrickEvent n Tick -> EventM n (Next State)
 control s ev = case ev of
-  AppEvent Tick -> nextS s =<< liftIO (play O s)
-  T.VtyEvent (V.EvKey V.KEnter _) -> nextS s =<< liftIO (play X s)
-  T.VtyEvent (V.EvKey V.KUp _) -> Brick.continue (move up s)
-  T.VtyEvent (V.EvKey V.KDown _) -> Brick.continue (move down s)
-  T.VtyEvent (V.EvKey V.KLeft _) -> Brick.continue (move left s)
-  T.VtyEvent (V.EvKey V.KRight _) -> Brick.continue (move right s)
+  --   AppEvent Tick -> nextS s =<< liftIO (play O s)
+  AppEvent Tick -> M.continue =<< liftIO (autoRefresh s)
+  -- AppEvent s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
   T.VtyEvent (V.EvKey V.KEsc _) -> Brick.halt s
   _ -> Brick.continue s -- Brick.halt s
 
--------------------------------------------------------------------------------
-move :: (Pos -> Pos) -> PlayState -> PlayState
--------------------------------------------------------------------------------
-move f s = s {psPos = f (psPos s)}
+edit :: State -> V.Event -> T.EventM Model.Widget State
+edit s = T.handleEventLensed s editor E.handleEditorEvent
 
--------------------------------------------------------------------------------
-play :: XO -> PlayState -> IO (Result Board)
--------------------------------------------------------------------------------
-play xo s
-  | psTurn s == xo = put (psBoard s) xo <$> getPos xo s
-  | otherwise = return Retry
+--  save :: State -> IO State
 
-getPos :: XO -> PlayState -> IO Pos
-getPos xo s = getStrategy xo s (psPos s) (psBoard s) xo
+autoRefresh :: State -> IO State
+autoRefresh s = do
+  -- d <- getCurrentTime
+  -- if diffUTCTime d (_now s) > 30
+  --   then refresh s
+  --   else pure s
+  pure s
 
-getStrategy :: XO -> PlayState -> Strategy
-getStrategy X s = plStrat (psX s)
-getStrategy O s = plStrat (psO s)
+syncFetch :: Config -> IO (BChan Tick -> State)
+syncFetch c = do
+  d <- getCurrentTime
+  pure $ \q ->
+    State
+      { config = c,
+        panel = Editor,
+        _editor = E.editor Default Nothing (renderNotes $ ""),
+        now = d,
+        day = undefined,
+        tasks = []
+      }
 
--------------------------------------------------------------------------------
-nextS :: PlayState -> Result Board -> EventM n (Next PlayState)
--------------------------------------------------------------------------------
-nextS s b = case next s b of
-  Right s' -> continue s'
-  Left res -> halt (s {psResult = res})
+renderNotes :: String -> String
+renderNotes = unlines . filter (/= "") . map trimLeft . splitOn ';'

@@ -1,10 +1,31 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Model where
+-- Model: Data structures
 
-import qualified Model.Board as Board
-import qualified Model.Player as Player
-import qualified Model.Score as Score
+module Model
+  ( Widget (..),
+    Panel (..),
+    State (..),
+    Tick (..),
+    Task (..),
+    editor,
+  )
+where
+
+import Brick.BChan (BChan, writeBChan)
+import qualified Brick.Widgets.Edit as E
+  ( Editor,
+    applyEdit,
+    editor,
+    getEditContents,
+    handleEditorEvent,
+  )
+import Config (Config)
+import Data.Char (isSpace)
+import Data.Time.Calendar (Day)
+import Data.Time.Clock (DiffTime, UTCTime, diffUTCTime, getCurrentTime, utctDay)
+import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
+import Lens.Micro (Lens', each, filtered, (%~))
 import Prelude hiding ((!!))
 
 -------------------------------------------------------------------------------
@@ -20,67 +41,31 @@ data Tick = Tick
 
 -------------------------------------------------------------------------------
 
-data State
-  = Intro
-  | Play PlayState
-  | Outro
-
-data PlayState = PS
-  { -- | player X info
-    psX :: Player.Player,
-    -- | player O info
-    psO :: Player.Player,
-    -- | current score
-    psScore :: Score.Score,
-    -- | current board
-    psBoard :: Board.Board,
-    -- | whose turn
-    psTurn :: Board.XO,
-    -- | current cursor
-    psPos :: Board.Pos,
-    -- | result
-    psResult :: Board.Result ()
+data State = State
+  { -- TODO:
+    config :: Config,
+    panel :: Panel,
+    _editor :: E.Editor String Widget,
+    now :: UTCTime,
+    day :: Day,
+    tasks :: [Task]
   }
 
-init :: Int -> PlayState
-init n =
-  PS
-    { psX = Player.human,
-      psO = Player.rando,
-      psScore = Score.init n,
-      psBoard = Board.init,
-      psTurn = Board.X,
-      psPos = head Board.positions,
-      psResult = Board.Cont ()
-    }
+data Widget
+  = Default
+  deriving (Show, Eq, Ord)
 
-isCurr :: PlayState -> Int -> Int -> Bool
-isCurr s r c = Board.pRow p == r && Board.pCol p == c
-  where
-    p = psPos s
+data Panel
+  = Editor -- TODO: add sheet later
+  deriving (Eq)
 
-next :: PlayState -> Board.Result Board.Board -> Either (Board.Result ()) PlayState
-next s Board.Retry = Right s
-next s (Board.Cont b') =
-  Right
-    ( s
-        { psBoard = b',
-          psTurn = Board.flipXO (psTurn s)
-        }
-    )
-next s res = nextBoard s res
+data Task = Task
+  { title :: String,
+    notes :: String,
+    duration :: Float,
+    startTime :: ZonedTime,
+    endTime :: ZonedTime
+  }
 
-nextBoard :: PlayState -> Board.Result a -> Either (Board.Result ()) PlayState
-nextBoard s res = case res' of
-  Board.Win _ -> Left res'
-  Board.Draw -> Left res'
-  _ -> Right s'
-  where
-    sc' = Score.add (psScore s) (Board.boardWinner res)
-    res' = Score.winner sc'
-    s' =
-      s
-        { psScore = sc', -- update the score
-          psBoard = mempty, -- clear the board
-          psTurn = Score.startPlayer sc' -- toggle start player
-        }
+editor :: Lens' State (E.Editor String Widget)
+editor f s = (\x -> s {_editor = x}) <$> f (_editor s)

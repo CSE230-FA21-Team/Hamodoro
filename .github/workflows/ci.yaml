@@ -20,7 +20,7 @@ jobs:
         with:
           version: "3.2.7"
 
-      - name: Run hlint
+      - name: Run hlint on src
         uses: rwe/actions-hlint-run@v2
         with:
           path: src/
@@ -59,3 +59,7 @@ jobs:
       - name: Build project
         run: |
           stack build
+
+      - name: Run tests
+        run: |
+          stack test --fast
