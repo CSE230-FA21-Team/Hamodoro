@@ -26,11 +26,8 @@ main = do
   let buildVty = V.mkVty V.defaultConfig
   initialVty <- buildVty
   s <- syncFetch c
-  -- TODO: let initialState = ...
   res <- customMain initialVty buildVty (Just chan) app (s chan)
-  -- TODO: this does not build yet,
-  -- need to initialize the state before passing it to app
-  print "asdf"
+  print "exit"
 
 app :: App State Tick Model.Widget
 app =

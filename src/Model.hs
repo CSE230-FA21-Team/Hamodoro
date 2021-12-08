@@ -77,30 +77,6 @@ splitOn c s =
 trimLeft :: String -> String
 trimLeft = dropWhile isSpace
 
--- from ttyme
--- syncFetch :: Config -> IO (BChan Event -> State)
--- syncFetch c = do
---   d <- getCurrentTime
---   es <- fetchEntries c (utctDay d)
---   ts <- fetchTasks c
---   pure $ \q ->
---     State
---     { _config = c
---     , _queue = q
---     , _command = []
---     , _panel = Sheet
---     , _focus = _id <$> listToMaybe es
---     , _running = _id <$> find running es
---     , _now = d
---     , _day = utctDay d
---     , _entries = es
---     , _tasks = ts
---     , _editor = E.editor Default Nothing (renderNotes $ notes' es)
---     }
---   where
---     notes' :: [Entry] -> String
---     notes' es = maybe "" notes (listToMaybe es)
-
 data Widget
   = Default
   deriving (Show, Eq, Ord)
