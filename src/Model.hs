@@ -1,7 +1,30 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Model where
+module Model
+  ( Widget (..),
+    Panel (..),
+    State (..),
+    Tick (..),
+    Task (..),
+    editor,
+    syncFetch,
+  )
+where
 
+import Brick.BChan (BChan, writeBChan)
+import qualified Brick.Widgets.Edit as E
+  ( Editor,
+    applyEdit,
+    editor,
+    getEditContents,
+    handleEditorEvent,
+  )
+import Config (Config)
+import Data.Char (isSpace)
+import Data.Time.Calendar (Day)
+import Data.Time.Clock (DiffTime, UTCTime, diffUTCTime, getCurrentTime, utctDay)
+import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
+import Lens.Micro (Lens', each, filtered, (%~))
 import Prelude hiding ((!!))
 
 -------------------------------------------------------------------------------
@@ -17,5 +40,82 @@ data Tick = Tick
 
 -------------------------------------------------------------------------------
 
-data State
-  = State
+data State = State
+  { -- TODO:
+    config :: Config,
+    panel :: Panel,
+    _editor :: E.Editor String Widget,
+    now :: UTCTime,
+    day :: Day,
+    tasks :: [Task]
+  }
+
+syncFetch :: Config -> IO (BChan Tick -> State)
+syncFetch c = do
+  d <- getCurrentTime
+  pure $ \q ->
+    State
+      { config = c,
+        panel = Editor,
+        _editor = E.editor Default Nothing (renderNotes $ ""),
+        now = d,
+        day = undefined,
+        tasks = []
+      }
+
+renderNotes :: String -> String
+renderNotes = unlines . filter (/= "") . map trimLeft . splitOn ';'
+
+splitOn :: Eq a => a -> [a] -> [[a]]
+splitOn c s =
+  case dropWhile (== c) s of
+    [] -> []
+    s' -> w : splitOn c s''
+      where
+        (w, s'') = break (== c) s'
+
+trimLeft :: String -> String
+trimLeft = dropWhile isSpace
+
+-- from ttyme
+-- syncFetch :: Config -> IO (BChan Event -> State)
+-- syncFetch c = do
+--   d <- getCurrentTime
+--   es <- fetchEntries c (utctDay d)
+--   ts <- fetchTasks c
+--   pure $ \q ->
+--     State
+--     { _config = c
+--     , _queue = q
+--     , _command = []
+--     , _panel = Sheet
+--     , _focus = _id <$> listToMaybe es
+--     , _running = _id <$> find running es
+--     , _now = d
+--     , _day = utctDay d
+--     , _entries = es
+--     , _tasks = ts
+--     , _editor = E.editor Default Nothing (renderNotes $ notes' es)
+--     }
+--   where
+--     notes' :: [Entry] -> String
+--     notes' es = maybe "" notes (listToMaybe es)
+
+data Widget
+  = Default
+  deriving (Show, Eq, Ord)
+
+data Panel
+  = Editor -- TODO: add sheet later
+  deriving (Eq)
+
+data Task = Task
+  { title :: String,
+    notes :: String,
+    duration :: Float,
+    startTime :: ZonedTime,
+    endTime :: ZonedTime
+  }
+
+editor :: Lens' State (E.Editor String Widget)
+editor f s = (\x -> s {_editor = x}) <$> f (_editor s)

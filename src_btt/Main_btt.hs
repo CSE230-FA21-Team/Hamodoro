@@ -1,8 +1,7 @@
-module Main where
+module Main_btt where
 
 import Brick
 import Brick.BChan (newBChan, writeBChan)
-import qualified Config as C (load)
 import Control
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (forever)
@@ -17,7 +16,7 @@ import View
 -------------------------------------------------------------------------------
 main :: IO ()
 main = do
-  Right c <- C.load
+  rounds <- fromMaybe defaultRounds <$> getRounds
   chan <- newBChan 10
   forkIO $
     forever $ do
@@ -25,19 +24,25 @@ main = do
       threadDelay 100000 -- decides how fast your game moves
   let buildVty = V.mkVty V.defaultConfig
   initialVty <- buildVty
-  s <- syncFetch c
-  -- TODO: let initialState = ...
-  res <- customMain initialVty buildVty (Just chan) app (s chan)
-  -- TODO: this does not build yet,
-  -- need to initialize the state before passing it to app
-  print "asdf"
+  res <- customMain initialVty buildVty (Just chan) app (Model.init rounds)
+  print (psResult res, psScore res)
 
-app :: App State Tick Model.Widget
+app :: App PlayState Tick String
 app =
   App
-    { appDraw = drawUI,
+    { appDraw = view,
       appChooseCursor = const . const Nothing,
       appHandleEvent = control,
       appStartEvent = return,
       appAttrMap = const (attrMap defAttr [])
     }
+
+getRounds :: IO (Maybe Int)
+getRounds = do
+  args <- getArgs
+  case args of
+    (str : _) -> return (readMaybe str)
+    _ -> return Nothing
+
+defaultRounds :: Int
+defaultRounds = 3

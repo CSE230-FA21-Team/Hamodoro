@@ -34,3 +34,9 @@ start:
 .PHONY: lint
 lint:
 	hlint .
+
+.PHONY: fmt
+fmt:
+	ormolu --mode inplace $(git ls-files '*.hs')
+	# this does not work
+

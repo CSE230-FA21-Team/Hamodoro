@@ -34,9 +34,10 @@ dependencies:
 - tomland
 - vty
 
-internal-libraries:
-  brick-tac-toe:
-    source-dirs: src_btt
+# NOTE: uncomment below to build brick-tac-toe
+# internal-libraries:
+#   libbtt:
+#     source-dirs: src_btt
 
 library:
   source-dirs: src
@@ -50,8 +51,18 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    # - hamodoro
-    - brick-tac-toe
+    - hamodoro
+  # NOTE: uncomment below to build brick-tac-toe
+  # brick-tac-toe:
+  #   main:                Main_btt.hs
+  #   source-dirs:         src_btt
+  #   ghc-options:
+  #   - -threaded
+  #   - -rtsopts
+  #   - -with-rtsopts=-N
+  #   dependencies:
+  #   # - hamodoro
+  #   - libbtt
 
 tests:
   hamodoro-test:
