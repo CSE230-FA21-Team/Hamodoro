@@ -12,8 +12,9 @@ jobs:
       - name: Check out
         uses: actions/checkout@v2
 
-      - name: Check formatting
+      - name: Check formatting, stage 1
         uses: mrkkrp/ormolu-action@v1
+        continue-on-error: true
 
       - name: Set up hlint
         uses: rwe/actions-hlint-setup@v1
@@ -63,3 +64,6 @@ jobs:
       - name: Run tests
         run: |
           stack test --fast
+
+      - name: Check formatting, stage 2
+        uses: mrkkrp/ormolu-action@v1
