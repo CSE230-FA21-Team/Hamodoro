@@ -31,12 +31,14 @@ import qualified Brick.Widgets.Edit as E
     getEditContents,
     handleEditorEvent,
   )
+import Lens.Micro
 import Config (Config)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Time.Clock (DiffTime, UTCTime, diffUTCTime, getCurrentTime, utctDay)
 import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
 import qualified Graphics.Vty as V
 import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
+import qualified Brick.Focus as F
 import Lib
 import Model
   ( Panel (Editor),
@@ -44,35 +46,42 @@ import Model
     Task (..),
     Tick (..),
     Widget (..),
-    editor,
+    Name (..),
+    editor1,
+    editor2,
+    editor3
   )
 
 -- import Model.Player
 
 -------------------------------------------------------------------------------
 
-control :: State -> T.BrickEvent Model.Widget Tick -> EventM Model.Widget (T.Next State)
+control :: State -> T.BrickEvent Name Tick -> EventM Name (T.Next State)
 control s@State {panel = p} (T.VtyEvent ev) = 
   case (p, ev) of
   --   AppEvent Tick -> nextS s =<< liftIO (play O s)
   -- AppEvent Tick -> M.continue =<< liftIO (autoRefresh s)
   -- AppEvent s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
     (Editor, V.EvKey V.KEsc _) -> M.halt s
+    (Editor, V.EvKey (V.KChar '\t') _) -> M.continue (s {_focusRing = F.focusNext (_focusRing s)})
     (Editor, V.EvKey V.KEnter _) -> M.continue =<< liftIO (save s)
-    (Editor, _) -> M.continue =<< edit s ev
+    (Editor, _) -> M.continue =<< case F.focusGetCurrent (_focusRing s) of
+               Just Edit1 -> T.handleEventLensed s editor1 E.handleEditorEvent ev
+               Just Edit2 -> T.handleEventLensed s editor2 E.handleEditorEvent ev
+               Just Edit3 -> T.handleEventLensed s editor3 E.handleEditorEvent ev
+               Nothing -> return s
 control s _ = M.continue s -- Brick.halt s
 
-edit :: State -> V.Event -> T.EventM Model.Widget State
-edit s = T.handleEventLensed s editor E.handleEditorEvent
-
 save :: State -> IO State
-save s@State {tasks = ts, _editor = ed} = do 
+save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do 
   pure $ s {tasks = ts ++ [t]}
-  where title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed 
+  where title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed1
+        notes1 = intercalate "; " . filter (/= "") $ E.getEditContents ed2 
+        duration1 = (E.getEditContents ed3) !! 0 
         t = Task {
           title = title1,
-          notes = "",
-          duration = 0
+          notes = notes1,
+          duration = read duration1
         }
     --startTime = zoneT,
     --endTime = zoneT}
@@ -95,7 +104,10 @@ syncFetch c = do
     State
       { config = c,
         panel = Editor,
-        _editor = E.editor Default Nothing (renderNotes $ ""),
+        _editor1 = E.editor Edit1 Nothing "",
+        _editor2 = E.editor Edit2 Nothing "",
+        _editor3 = E.editor Edit3 Nothing "0",
+        _focusRing = F.focusRing [Edit1, Edit2, Edit3],
         now = d,
         day = (utctDay d),
         -- TODO: change tasks back to []
@@ -106,14 +118,14 @@ syncFetch c = do
                 duration = 20
                 --startTime = zoneT,
                 --endTime = zoneT
-              },
-            Task
-              { title = "test task 2",
-                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque e",
-                duration = 40
+              }
+            --Task
+            --  { title = "test task 2",
+            --    notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque e",
+            --    duration = "40"
                 --startTime = zoneT,
                 --endTime = zoneT
-              }
+            --  }
           ]
       }
 
