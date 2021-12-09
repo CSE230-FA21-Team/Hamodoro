@@ -72,6 +72,9 @@ control s@State {_panel = p} (T.VtyEvent ev) =
     (Schedule, _) -> M.continue s
     (Clock, V.EvKey V.KEsc _) -> M.halt s
     (Clock, _) -> M.continue s
+    (Ending, V.EvKey V.KEsc _) -> M.halt s
+    (Ending, V.EvKey (V.KChar 'N') _) -> M.continue =<< liftIO (restart s)
+    (Ending, _) -> M.continue s  
 control s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
 control s _ = M.continue s -- Brick.halt s
 
@@ -80,6 +83,15 @@ clear s = do
   pure $
     s
       { tasks = []
+      }
+
+restart :: State -> IO State
+restart s = do
+  pure $
+    s
+      {
+        status = Ready,
+        _panel = Editor
       }
 
 deleteOne :: State -> IO State
@@ -148,7 +160,7 @@ autoRefresh s = do
               { now = d,
                 countdown = floor $ toRational $ diff
               }
-        else pure $ s {now = d}
+        else pure $ s {now = d, status = Finished, _panel = Ending}
 
 getLatestTask :: State -> IO Task
 getLatestTask s = do
