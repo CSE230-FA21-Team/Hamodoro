@@ -76,7 +76,7 @@ data Status
   = Ready
   | Running
   | Paused
-  | Stopped
+  | Finished
   deriving (Eq)
 
 data Task = Task

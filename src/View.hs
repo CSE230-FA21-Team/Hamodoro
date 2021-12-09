@@ -21,6 +21,7 @@ import Model
 import qualified UI.Clock as Clock (render)
 import qualified UI.Editor as Editor (render)
 import qualified UI.Schedule as Schedule (render)
+import qualified UI.Ending as Ending (render)
 
 drawUI :: State -> [T.Widget Widget]
 --drawUI s = [Editor.render s]
@@ -35,6 +36,12 @@ drawUI s =
     Running ->
       [ hBox
           [ padLeftRight 1 (Clock.render s),
+            padLeftRight 1 (Schedule.render s)
+          ]
+      ]
+    Finished ->
+      [ hBox
+          [ padLeftRight 1 (Ending.render s),
             padLeftRight 1 (Schedule.render s)
           ]
       ]
