@@ -65,11 +65,22 @@ control s@State {_panel = p} (T.VtyEvent ev) =
         Just Edit2 -> T.handleEventLensed s editor2 E.handleEditorEvent ev
         Just Edit3 -> T.handleEventLensed s editor3 E.handleEditorEvent ev
         Nothing -> return s
+    (Schedule, V.EvKey (V.KChar 'C') _) -> M.continue =<< liftIO (clear s)
     (Schedule, V.EvKey V.KEsc _) -> M.halt s
     (Schedule, V.EvKey (V.KChar '\t') _) -> M.continue (s {_panel = Editor})
     (Schedule, _) -> M.continue s
+    (Clock, V.EvKey V.KEsc _) -> M.halt s
+    (Clock, _) -> M.continue s
 control s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
 control s _ = M.continue s -- Brick.halt s
+
+clear :: State -> IO State
+clear s = do
+  pure $
+    s
+      {
+        tasks = []
+      }
 
 save :: State -> IO State
 save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
@@ -86,12 +97,13 @@ save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
               pure $
                 s
                   { status = Running,
+                  _panel = Clock,
                     tasks =
                       ts
                       ++ [ Task
                          { title = title1,
                            notes = notes1,
-                           duration = read duration1,
+                           duration = n,
                            startTime = zTime,
                            endTime = zTime
                           }
@@ -143,14 +155,65 @@ syncFetch c = do
                 duration = 20,
                 startTime = z,
                 endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
               }
-              --Task
-              --  { title = "test task 2",
-              --    notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque e",
-              --    duration = "40"
-              --startTime = zoneT,
-              --endTime = zoneT
-              --  }
+
+ 
           ]
       }
 

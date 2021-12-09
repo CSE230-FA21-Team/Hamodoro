@@ -36,7 +36,7 @@ render :: State -> T.Widget Widget
 render s =
   (drawDate s)
     <=> ( C.hCenter $
-            vBox (drawTasks s `lor` [C.center $ str "No Task Done Yet"])
+            vBox (drawTasks s `orEmpty` [C.center $ str "No Task Done Yet"])
         )
     <=> (drawClear s)
 
@@ -66,8 +66,8 @@ drawTask t =
     --time = padLeft T.Max . str $ (fmap show startTime t) ++ " to " ++ (fmap show endTime t)
     time = padLeft T.Max . str $ (formatTime $ startTime t) ++ " to " ++ (formatTime $ endTime t)
 
-lor :: (Foldable f) => f a -> f a -> f a
-lor a b = bool a b (null a)
+orEmpty :: (Foldable f) => f a -> f a -> f a
+orEmpty a b = bool a b (null a)
 
 formatTime :: ZonedTime -> String
 formatTime = F.formatTime F.defaultTimeLocale "%F %R"
