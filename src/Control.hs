@@ -66,6 +66,7 @@ control s@State {_panel = p} (T.VtyEvent ev) =
         Just Edit3 -> T.handleEventLensed s editor3 E.handleEditorEvent ev
         Nothing -> return s
     (Schedule, V.EvKey (V.KChar 'C') _) -> M.continue =<< liftIO (clear s)
+    (Schedule, V.EvKey (V.KChar 'D') _) -> M.continue =<< liftIO (deleteOne s)
     (Schedule, V.EvKey V.KEsc _) -> M.halt s
     (Schedule, V.EvKey (V.KChar '\t') _) -> M.continue (s {_panel = Editor})
     (Schedule, _) -> M.continue s
@@ -80,6 +81,14 @@ clear s = do
     s
       {
         tasks = []
+      }
+
+deleteOne :: State -> IO State
+deleteOne s@State {tasks = ts} = do
+  pure $
+    s
+      {
+        tasks = if (length ts)>=1 then (tail ts) else []
       }
 
 save :: State -> IO State

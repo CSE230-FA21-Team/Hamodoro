@@ -35,6 +35,7 @@ import Model
 render :: State -> T.Widget Widget
 render s =
   (drawDate s)
+    <=> (drawDelete s)
     <=> ( C.hCenter $
             vBox (drawTasks s `orEmpty` [C.center $ str "No Task Done Yet"])
         )
@@ -44,6 +45,11 @@ drawDate :: State -> T.Widget Widget
 drawDate s =
   withBorderStyle unicodeRounded . B.border . C.hCenter . padTopBottom 1 $
     hBox [str $ formatDate (day s)]
+
+drawDelete :: State -> T.Widget Widget
+drawDelete s =
+  withBorderStyle unicodeRounded . B.border . C.hCenter $
+    hBox [str $ "Delete the earliest task (D)"]
 
 drawClear :: State -> T.Widget Widget
 drawClear s =
