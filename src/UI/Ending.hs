@@ -6,7 +6,7 @@ where
 import qualified Brick.Types as T (Widget)
 import qualified Brick.Widgets.Border as B (border)
 import Brick.Widgets.Border.Style (unicodeRounded)
-import Model (Panel (..), State (..), Widget (..), editor)
+import Model
 import qualified Brick.Widgets.Center as C (center, hCenter)
 import Brick.Widgets.Core
   ( (<+>)
