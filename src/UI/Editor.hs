@@ -27,8 +27,8 @@ render s =
       <=> str " "
       <=> (str "Duration: " <+> (hLimit 4 e3))
       <=> str " "
+      <=> str (notification s)
       <=> str "Press Tab to switch between editors."
-      <=> str " "
       <=> str "Press Esc to quit."
   where
     e1 = F.withFocusRing (_focusRing s) (renderEditor (str . unlines)) (_editor1 s)

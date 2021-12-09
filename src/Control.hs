@@ -88,27 +88,30 @@ save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
   let title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed1
       notes1 = intercalate "; " . filter (/= "") $ E.getEditContents ed2
       duration1 = (E.getEditContents ed3) !! 0
-      --case readMaybe duration1 of
+  case readMaybe duration1 :: Maybe Int of
+        Nothing -> pure $ s {notification = "Please enter a number between 1-99!"}
+        Just n -> 
+          if n >= 100 || n <= 0
+            then pure $ s {notification = "Please enter a number between 1-99!"}
+            else 
+              pure $
+                s
+                  { status = Running,
+                  _panel = Clock,
+                    tasks =
+                      ts
+                      ++ [ Task
+                         { title = title1,
+                           notes = notes1,
+                           duration = n,
+                           startTime = zTime,
+                           endTime = zTime
+                          }
+                          ],
+                    notification = " "
+                    }
+        
 
-
-  --t <- Task {
-
-  --      }
-  pure $
-    s
-      { status = Running,
-        _panel = Clock,
-        tasks =
-          ts
-            ++ [ Task
-                   { title = title1,
-                     notes = notes1,
-                     duration = read duration1,
-                     startTime = zTime,
-                     endTime = zTime
-                   }
-               ]
-      }
 
 --where title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed1
 --notes1 = intercalate "; " . filter (/= "") $ E.getEditContents ed2
@@ -141,6 +144,7 @@ syncFetch c = do
         _editor2 = E.editor Edit2 Nothing "",
         _editor3 = E.editor Edit3 Nothing "0",
         _focusRing = F.focusRing [Edit1, Edit2, Edit3],
+        notification = " ",
         now = d,
         day = (utctDay d),
         -- TODO: change tasks back to []
