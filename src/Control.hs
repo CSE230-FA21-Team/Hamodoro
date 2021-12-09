@@ -86,8 +86,7 @@ deleteOne :: State -> IO State
 deleteOne s@State {tasks = ts} = do
   pure $
     s
-      {
-        tasks = if (length ts)>=1 then (tail ts) else []
+      { tasks = if (length ts) >= 1 then (tail ts) else []
       }
 
 save :: State -> IO State
@@ -136,18 +135,20 @@ save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
 autoRefresh :: State -> IO State
 autoRefresh s = do
   d <- getCurrentTime
-  latestTask <- getLatestTask s
-  let latestEndTime = zonedTimeToUTC (endTime latestTask)
-      diff = nominalDiffTimeToSeconds (diffUTCTime latestEndTime d)
-  -- putStrLn $ "diff: " ++ show diff
-  if diff < 0
-    then pure $ s {now = d}
-    else
-      pure $
-        s
-          { now = d,
-            countdown = floor $ toRational $ diff
-          }
+  if status s /= Running
+    then pure s
+    else do
+      latestTask <- getLatestTask s
+      let latestEndTime = zonedTimeToUTC (endTime latestTask)
+          diff = nominalDiffTimeToSeconds (diffUTCTime latestEndTime d)
+      if diff > 0
+        then
+          pure $
+            s
+              { now = d,
+                countdown = floor $ toRational $ diff
+              }
+        else pure $ s {now = d}
 
 getLatestTask :: State -> IO Task
 getLatestTask s = do
