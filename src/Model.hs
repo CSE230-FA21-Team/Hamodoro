@@ -73,7 +73,6 @@ data Panel
   | Schedule
   | Clock
   | Ending
-  | Schedule
   deriving (Eq)
 
 data Status
