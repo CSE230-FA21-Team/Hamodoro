@@ -56,6 +56,7 @@ data State = State
     _editor2 :: E.Editor String Widget,
     _editor3 :: E.Editor String Widget,
     _focusRing :: F.FocusRing Widget,
+    notification :: String,
     now :: UTCTime,
     countdown :: Int,
     day :: Day,
@@ -71,8 +72,9 @@ data Widget
 
 data Panel
   = Editor -- TODO: add sheet later
-  | Ending
   | Schedule
+  | Clock
+  | Ending
   deriving (Eq)
 
 data Status

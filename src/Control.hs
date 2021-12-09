@@ -65,10 +65,21 @@ control s@State {_panel = p} (T.VtyEvent ev) =
         Just Edit2 -> T.handleEventLensed s editor2 E.handleEditorEvent ev
         Just Edit3 -> T.handleEventLensed s editor3 E.handleEditorEvent ev
         Nothing -> return s
+    (Schedule, V.EvKey (V.KChar 'C') _) -> M.continue =<< liftIO (clear s)
+    (Schedule, V.EvKey V.KEsc _) -> M.halt s
     (Schedule, V.EvKey (V.KChar '\t') _) -> M.continue (s {_panel = Editor})
     (Schedule, _) -> M.continue s
+    (Clock, V.EvKey V.KEsc _) -> M.halt s
+    (Clock, _) -> M.continue s
 control s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
 control s _ = M.continue s -- Brick.halt s
+
+clear :: State -> IO State
+clear s = do
+  pure $
+    s
+      { tasks = []
+      }
 
 save :: State -> IO State
 save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
@@ -80,23 +91,28 @@ save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
       zTime = utcToZonedTime tz utcTime
       duration1 = (E.getEditContents ed3) !! 0
   --case readMaybe duration1 of
-  let duration_int = parseIntOrDefault duration1 5
+  let duration_int = parseIntOrDefault duration1 (-1)
   let endTime = utcToZonedTime tz (addUTCTime (fromIntegral duration_int * 60) utcTime)
 
-  pure $
-    s
-      { status = Running,
-        tasks =
-          ts
-            ++ [ Task
-                   { title = title1,
-                     notes = notes1,
-                     duration = read duration1,
-                     startTime = zTime,
-                     endTime = endTime
-                   }
-               ]
-      }
+  if duration_int >= 100 || duration_int <= 0
+    then pure $ s {notification = "Please enter a number between 1-99!"}
+    else
+      pure $
+        s
+          { status = Running,
+            notification = " ",
+            _panel = Clock,
+            tasks =
+              ts
+                ++ [ Task
+                       { title = title1,
+                         notes = notes1,
+                         duration = read duration1,
+                         startTime = zTime,
+                         endTime = endTime
+                       }
+                   ]
+          }
 
 --where title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed1
 --notes1 = intercalate "; " . filter (/= "") $ E.getEditContents ed2
@@ -143,6 +159,7 @@ syncFetch c = do
         _editor2 = E.editor Edit2 Nothing "",
         _editor3 = E.editor Edit3 Nothing "0",
         _focusRing = F.focusRing [Edit1, Edit2, Edit3],
+        notification = " ",
         now = d,
         day = (utctDay d),
         countdown = 0,
@@ -154,14 +171,63 @@ syncFetch c = do
                 duration = 20,
                 startTime = z,
                 endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
               }
-              --Task
-              --  { title = "test task 2",
-              --    notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque e",
-              --    duration = "40"
-              --startTime = zoneT,
-              --endTime = zoneT
-              --  }
           ]
       }
 

@@ -22,5 +22,6 @@ splitOn c s =
 trimLeft :: String -> String
 trimLeft = dropWhile isSpace
 
+parseIntOrDefault :: Read a => String -> a -> a
 parseIntOrDefault s d =
   fromMaybe d (readMaybe s)
