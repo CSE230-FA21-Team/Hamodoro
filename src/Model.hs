@@ -56,6 +56,7 @@ data State = State
     _editor2 :: E.Editor String Widget,
     _editor3 :: E.Editor String Widget,
     _focusRing :: F.FocusRing Widget,
+    notification :: String,
     now :: UTCTime,
     day :: Day,
     tasks :: [Task]
