@@ -6,22 +6,21 @@ where
 import qualified Brick.Types as T (Widget)
 import qualified Brick.Widgets.Border as B (border)
 import Brick.Widgets.Border.Style (unicodeRounded)
-import Model
 import qualified Brick.Widgets.Center as C (center, hCenter)
 import Brick.Widgets.Core
-  ( (<+>)
-  , (<=>)
-  , padBottom
-  , padLeft
-  , padTopBottom
-  , str
-  , updateAttrMap
-  , vBox
-  , hBox
-  , withAttr
-  , withBorderStyle
+  ( hBox,
+    padBottom,
+    padLeft,
+    padTopBottom,
+    str,
+    updateAttrMap,
+    vBox,
+    withAttr,
+    withBorderStyle,
+    (<+>),
+    (<=>),
   )
-
+import Model
 
 render :: State -> T.Widget Widget
 render s =
@@ -36,10 +35,8 @@ drawFinish s =
 
 drawBreak :: State -> T.Widget Widget
 drawBreak s =
-  withBorderStyle unicodeRounded . B.border . C.hCenter . padTopBottom 5 $ 
+  withBorderStyle unicodeRounded . B.border . C.hCenter . padTopBottom 5 $
     hBox [str $ "Take a break ∠( ᐛ 」∠)＿"]
-
-
 
 drawNew :: State -> T.Widget Widget
 drawNew s =

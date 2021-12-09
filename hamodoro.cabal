@@ -29,7 +29,9 @@ library
       Lib
       Lib.Digit
       Model
+      UI.Clock
       UI.Editor
+      UI.Ending
       UI.Schedule
       View
   other-modules:
