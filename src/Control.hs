@@ -65,6 +65,7 @@ control s@State {_panel = p} (T.VtyEvent ev) =
         Just Edit2 -> T.handleEventLensed s editor2 E.handleEditorEvent ev
         Just Edit3 -> T.handleEventLensed s editor3 E.handleEditorEvent ev
         Nothing -> return s
+    (Schedule, V.EvKey V.KEsc _) -> M.halt s
     (Schedule, V.EvKey (V.KChar '\t') _) -> M.continue (s {_panel = Editor})
     (Schedule, _) -> M.continue s
 control s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
