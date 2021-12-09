@@ -13,3 +13,8 @@ testDigits = hspec $ do
       let expect_str = [".....#.######...######.#......", ".....#......#.#......#.#......", ".....#.######......###.#...#..", ".....#.#......#......#.######.", ".....#.######...######.....#.."]
       putStrLn $ "digits_str: \n" ++ (unlines digits_str)
       digits_str `shouldBe` expect_str
+    it "should return the correct string list for 95:27" $ do
+      let digits_str = timeToDigitalLines [9, 5, 2, 7]
+      let expect_str = ["######.######...######......#.", "#....#.#....#.#......#......#.", "######.######...######......#.", ".....#......#.#.#...........#.", "######.######...######......#."]
+      putStrLn $ "digits_str: \n" ++ (unlines digits_str)
+      digits_str `shouldBe` expect_str
