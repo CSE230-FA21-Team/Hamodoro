@@ -24,7 +24,8 @@ import qualified Brick.Main as M
     halt,
     showFirstCursor,
   )
-import qualified Brick.Types as T (BrickEvent (..), EventM, Next, handleEventLensed)
+import qualified Brick.Types as T
+--import qualified Brick.Types as T (BrickEvent (..), EventM, Next, handleEventLensed)
 import qualified Brick.Widgets.Edit as E
   ( applyEdit,
     editor,
@@ -38,6 +39,7 @@ import Data.Time.Clock (DiffTime, UTCTime, diffUTCTime, getCurrentTime, utctDay)
 import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
 import qualified Graphics.Vty as V
 import Lens.Micro
+import Text.Read
 import Lib
 import Model
 
@@ -46,13 +48,16 @@ import Model
 -------------------------------------------------------------------------------
 
 control :: State -> T.BrickEvent Model.Widget Tick -> EventM Model.Widget (T.Next State)
-control s@State {panel = p} (T.VtyEvent ev) =
+control s@State {_panel = p} (T.VtyEvent ev) =
   case (p, ev) of
     --   AppEvent Tick -> nextS s =<< liftIO (play O s)
     -- AppEvent Tick -> M.continue =<< liftIO (autoRefresh s)
     -- AppEvent s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
     (Editor, V.EvKey V.KEsc _) -> M.halt s
-    (Editor, V.EvKey (V.KChar '\t') _) -> M.continue (s {_focusRing = F.focusNext (_focusRing s)})
+    --(Editor, V.EvKey (V.KChar '\t') _) -> M.continue (s {_focusRing = F.focusNext (_focusRing s)})
+    (Editor, V.EvKey (V.KChar '\t') _) -> M.continue (s {_panel = Schedule})
+    (Editor, V.EvKey V.KDown _) -> M.continue (s {_focusRing = F.focusNext (_focusRing s)})
+    (Editor, V.EvKey V.KUp _) -> M.continue (s {_focusRing = F.focusPrev (_focusRing s)})
     (Editor, V.EvKey V.KEnter _) -> M.continue =<< liftIO (save s)
     (Schedule, V.EvKey (V.KChar 'C') _) -> M.continue =<< liftIO (clear s)
     (Editor, _) ->
@@ -61,6 +66,8 @@ control s@State {panel = p} (T.VtyEvent ev) =
         Just Edit2 -> T.handleEventLensed s editor2 E.handleEditorEvent ev
         Just Edit3 -> T.handleEventLensed s editor3 E.handleEditorEvent ev
         Nothing -> return s
+    (Schedule, V.EvKey (V.KChar '\t') _) -> M.continue (s {_panel = Editor})
+    (Schedule, _) -> M.continue s
 control s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
 control s _ = M.continue s -- Brick.halt s
 
@@ -78,6 +85,9 @@ save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
   let title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed1
       notes1 = intercalate "; " . filter (/= "") $ E.getEditContents ed2
       duration1 = (E.getEditContents ed3) !! 0
+      --case readMaybe duration1 of
+
+
   --t <- Task {
 
   --      }
@@ -103,6 +113,9 @@ save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
 --startTime = zoneT,
 --endTime = zoneT}
 
+--editToSchedule :: State -> State
+--editToSchedule s = s & panel .~ Schedule
+
 autoRefresh :: State -> IO State
 autoRefresh s = do
   -- d <- getCurrentTime
@@ -118,7 +131,7 @@ syncFetch c = do
   pure $ \q ->
     State
       { config = c,
-        panel = Editor,
+        _panel = Editor,
         status = Ready,
         _editor1 = E.editor Edit1 Nothing "",
         _editor2 = E.editor Edit2 Nothing "",
@@ -198,3 +211,6 @@ syncFetch c = do
 
 renderNotes :: String -> String
 renderNotes = unlines . filter (/= "") . map trimLeft . splitOn ';'
+
+appCursor :: State -> [T.CursorLocation Model.Widget] -> Maybe (T.CursorLocation Model.Widget)
+appCursor = F.focusRingCursor (_focusRing)
