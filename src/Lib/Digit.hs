@@ -1,7 +1,7 @@
 module Lib.Digit
   ( timeToDigitalLines,
     secondsToDigitLines,
-    secondsToDigitArray
+    secondsToDigitArray,
   )
 where
 

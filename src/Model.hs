@@ -12,7 +12,7 @@ module Model
     editor1,
     editor2,
     editor3,
-    panel
+    panel,
   )
 where
 
