@@ -20,8 +20,8 @@ import Brick.Widgets.Core
 import Model
 import qualified UI.Clock as Clock (render)
 import qualified UI.Editor as Editor (render)
-import qualified UI.Schedule as Schedule (render)
 import qualified UI.Ending as Ending (render)
+import qualified UI.Schedule as Schedule (render)
 
 drawUI :: State -> [T.Widget Widget]
 --drawUI s = [Editor.render s]

@@ -45,4 +45,4 @@ renderNumbers ss = replaceDot (replaceHash (unlines ss))
 drawClock :: State -> T.Widget Widget
 drawClock s =
   withBorderStyle unicodeRounded . B.border . C.hCenter . padTopBottom 1 $
-    hBox [str $ renderNumbers (timeToDigitalLines [1, 2, 3, 4])]
+    hBox [str $ renderNumbers (secondsToDigitLines $ countdown s)]
