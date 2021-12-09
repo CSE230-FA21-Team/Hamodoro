@@ -35,13 +35,13 @@ import qualified Brick.Widgets.Edit as E
 import Config (Config)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.List (find, intercalate)
-import Data.Time.Clock (DiffTime, UTCTime, diffUTCTime, getCurrentTime, utctDay)
-import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
+import Data.Time.Clock (DiffTime, UTCTime, addUTCTime, diffUTCTime, getCurrentTime, nominalDiffTimeToSeconds, utctDay)
+import Data.Time.LocalTime (ZonedTime (..), getCurrentTimeZone, getZonedTime, utcToLocalTime, utcToZonedTime, zonedTimeToUTC)
 import qualified Graphics.Vty as V
 import Lens.Micro
-import Text.Read
 import Lib
 import Model
+import Text.Read
 
 -- import Model.Player
 
@@ -72,16 +72,17 @@ control s _ = M.continue s -- Brick.halt s
 
 save :: State -> IO State
 save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
-  zTime <- getZonedTime
+  tz <- getCurrentTimeZone
+  utcTime <- getCurrentTime
+
   let title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed1
       notes1 = intercalate "; " . filter (/= "") $ E.getEditContents ed2
+      zTime = utcToZonedTime tz utcTime
       duration1 = (E.getEditContents ed3) !! 0
-      --case readMaybe duration1 of
+  --case readMaybe duration1 of
+  let duration_int = parseIntOrDefault duration1 5
+  let endTime = utcToZonedTime tz (addUTCTime (fromIntegral duration_int * 60) utcTime)
 
-
-  --t <- Task {
-
-  --      }
   pure $
     s
       { status = Running,
@@ -92,7 +93,7 @@ save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
                      notes = notes1,
                      duration = read duration1,
                      startTime = zTime,
-                     endTime = zTime
+                     endTime = endTime
                    }
                ]
       }
@@ -109,11 +110,25 @@ save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
 
 autoRefresh :: State -> IO State
 autoRefresh s = do
-  -- d <- getCurrentTime
-  -- if diffUTCTime d (_now s) > 30
-  --   then refresh s
-  --   else pure s
-  pure s
+  d <- getCurrentTime
+  latestTask <- getLatestTask s
+  let latestEndTime = zonedTimeToUTC (endTime latestTask)
+      diff = nominalDiffTimeToSeconds (diffUTCTime latestEndTime d)
+  -- putStrLn $ "diff: " ++ show diff
+  if diff < 0
+    then pure $ s {now = d}
+    else
+      pure $
+        s
+          { now = d,
+            countdown = floor $ toRational $ diff
+          }
+
+getLatestTask :: State -> IO Task
+getLatestTask s = do
+  let ts = tasks s
+  let t = last ts
+  pure t
 
 syncFetch :: Config -> IO (BChan Tick -> State)
 syncFetch c = do
@@ -130,6 +145,7 @@ syncFetch c = do
         _focusRing = F.focusRing [Edit1, Edit2, Edit3],
         now = d,
         day = (utctDay d),
+        countdown = 0,
         -- TODO: change tasks back to []
         tasks =
           [ Task

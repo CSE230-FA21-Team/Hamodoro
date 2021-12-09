@@ -57,6 +57,7 @@ data State = State
     _editor3 :: E.Editor String Widget,
     _focusRing :: F.FocusRing Widget,
     now :: UTCTime,
+    countdown :: Int,
     day :: Day,
     tasks :: [Task]
   }
