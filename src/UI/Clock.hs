@@ -30,19 +30,19 @@ import qualified Data.Time.Format as F (defaultTimeLocale, formatTime)
 import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
 import qualified Graphics.Vty as V (black, defAttr, magenta)
 import Graphics.Vty.Attributes
-import Model (State (..), Task (..), Widget (..))
 import Lib.Digit
+import Model (State (..), Task (..), Widget (..))
 
 render :: State -> T.Widget Widget
 render s = C.hCenter $ C.center (drawClock s)
 
 renderNumbers :: [String] -> String
-renderNumbers ss = replaceDot (replaceHash (unlines ss)) where
-    replaceHash = map (\c -> if c=='#' then '█'; else c)
-    replaceDot = map (\c -> if c=='.' then ' '; else c)
+renderNumbers ss = replaceDot (replaceHash (unlines ss))
+  where
+    replaceHash = map (\c -> if c == '#' then '█' else c)
+    replaceDot = map (\c -> if c == '.' then ' ' else c)
 
 drawClock :: State -> T.Widget Widget
 drawClock s =
-    withBorderStyle unicodeRounded . B.border . C.hCenter . padTopBottom 1 $
-    hBox [str $ renderNumbers (timeToDigitalLines [1,2,3,4])]
-
+  withBorderStyle unicodeRounded . B.border . C.hCenter . padTopBottom 1 $
+    hBox [str $ renderNumbers (timeToDigitalLines [1, 2, 3, 4])]

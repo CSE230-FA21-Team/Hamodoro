@@ -18,15 +18,15 @@ import Brick.Widgets.Core
     (<=>),
   )
 import Model
+import qualified UI.Clock as Clock (render)
 import qualified UI.Editor as Editor (render)
 import qualified UI.Schedule as Schedule (render)
-import qualified UI.Clock as Clock (render)
 
 drawUI :: State -> [T.Widget Widget]
 --drawUI s = [Editor.render s]
-drawUI s = 
+drawUI s =
   case status s of
-    Ready -> 
+    Ready ->
       [ hBox
           [ padLeftRight 1 (Editor.render s),
             padLeftRight 1 (Schedule.render s)

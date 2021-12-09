@@ -11,7 +11,7 @@ module Model
     Status (..),
     editor1,
     editor2,
-    editor3
+    editor3,
   )
 where
 

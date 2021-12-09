@@ -11,7 +11,7 @@ import Brick hiding (Result)
 --   )
 
 import Brick.BChan (BChan, writeBChan)
-import Data.List (find, intercalate)
+import qualified Brick.Focus as F
 import qualified Brick.Main as M
   ( App (..),
     appAttrMap,
@@ -31,14 +31,13 @@ import qualified Brick.Widgets.Edit as E
     getEditContents,
     handleEditorEvent,
   )
-import Lens.Micro
 import Config (Config)
 import Control.Monad.IO.Class (MonadIO (liftIO))
+import Data.List (find, intercalate)
 import Data.Time.Clock (DiffTime, UTCTime, diffUTCTime, getCurrentTime, utctDay)
 import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
 import qualified Graphics.Vty as V
-import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
-import qualified Brick.Focus as F
+import Lens.Micro
 import Lib
 import Model
 
@@ -49,17 +48,18 @@ import Model
 control :: State -> T.BrickEvent Model.Widget Tick -> EventM Model.Widget (T.Next State)
 control s@State {panel = p} (T.VtyEvent ev) =
   case (p, ev) of
-  --   AppEvent Tick -> nextS s =<< liftIO (play O s)
-  -- AppEvent Tick -> M.continue =<< liftIO (autoRefresh s)
-  -- AppEvent s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
+    --   AppEvent Tick -> nextS s =<< liftIO (play O s)
+    -- AppEvent Tick -> M.continue =<< liftIO (autoRefresh s)
+    -- AppEvent s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
     (Editor, V.EvKey V.KEsc _) -> M.halt s
     (Editor, V.EvKey (V.KChar '\t') _) -> M.continue (s {_focusRing = F.focusNext (_focusRing s)})
     (Editor, V.EvKey V.KEnter _) -> M.continue =<< liftIO (save s)
-    (Editor, _) -> M.continue =<< case F.focusGetCurrent (_focusRing s) of
-               Just Edit1 -> T.handleEventLensed s editor1 E.handleEditorEvent ev
-               Just Edit2 -> T.handleEventLensed s editor2 E.handleEditorEvent ev
-               Just Edit3 -> T.handleEventLensed s editor3 E.handleEditorEvent ev
-               Nothing -> return s
+    (Editor, _) ->
+      M.continue =<< case F.focusGetCurrent (_focusRing s) of
+        Just Edit1 -> T.handleEventLensed s editor1 E.handleEditorEvent ev
+        Just Edit2 -> T.handleEventLensed s editor2 E.handleEditorEvent ev
+        Just Edit3 -> T.handleEventLensed s editor3 E.handleEditorEvent ev
+        Nothing -> return s
 control s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
 control s _ = M.continue s -- Brick.halt s
 
@@ -72,21 +72,27 @@ save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
   --t <- Task {
 
   --      }
-  pure $ s {
-        status = Running,
-        tasks = ts ++ [Task {title = title1,
-          notes = notes1,
-          duration = read duration1,
-          startTime = zTime,
-          endTime = zTime}]}
-  --where title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed1
-        --notes1 = intercalate "; " . filter (/= "") $ E.getEditContents ed2 
-        --duration1 = (E.getEditContents ed3) !! 0 
+  pure $
+    s
+      { status = Running,
+        tasks =
+          ts
+            ++ [ Task
+                   { title = title1,
+                     notes = notes1,
+                     duration = read duration1,
+                     startTime = zTime,
+                     endTime = zTime
+                   }
+               ]
+      }
 
-    --startTime = zoneT,
-    --endTime = zoneT}
+--where title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed1
+--notes1 = intercalate "; " . filter (/= "") $ E.getEditContents ed2
+--duration1 = (E.getEditContents ed3) !! 0
 
-
+--startTime = zoneT,
+--endTime = zoneT}
 
 autoRefresh :: State -> IO State
 autoRefresh s = do
@@ -120,13 +126,13 @@ syncFetch c = do
                 startTime = z,
                 endTime = z
               }
-            --Task
-            --  { title = "test task 2",
-            --    notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque e",
-            --    duration = "40"
-                --startTime = zoneT,
-                --endTime = zoneT
-            --  }
+              --Task
+              --  { title = "test task 2",
+              --    notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque e",
+              --    duration = "40"
+              --startTime = zoneT,
+              --endTime = zoneT
+              --  }
           ]
       }
 
