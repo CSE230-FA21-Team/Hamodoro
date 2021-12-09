@@ -57,13 +57,14 @@ drawTasks s =
 drawTask :: Task -> T.Widget Name
 drawTask t =
   taskStyle True . withBorderStyle unicodeRounded . B.border $
-    (sessionTitle <+> dur) <=> B.hBorder <=> note
-    --(sessionTitle <+> dur) <=> B.hBorder <=> note <=> time
+    --(sessionTitle <+> dur) <=> B.hBorder <=> note
+    (sessionTitle <+> dur) <=> B.hBorder <=> note <=> time
   where
     sessionTitle = (withAttr (attrName "bold") . str . title) t
     dur = padLeft T.Max . str $ show (duration t) ++ " min"
     note = padBottom (T.Pad 1) (strWrap $ (notes t))
-    --time = padLeft T.Max . str $ (formatTime $ startTime t) ++ " to " ++ (formatTime $ endTime t)
+    --time = padLeft T.Max . str $ (fmap show startTime t) ++ " to " ++ (fmap show endTime t)
+    time = padLeft T.Max . str $ (formatTime $ startTime t) ++ " to " ++ (formatTime $ endTime t)
 
 lor :: (Foldable f) => f a -> f a -> f a
 lor a b = bool a b (null a)

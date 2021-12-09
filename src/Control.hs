@@ -74,15 +74,22 @@ control s _ = M.continue s -- Brick.halt s
 
 save :: State -> IO State
 save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do 
-  pure $ s {tasks = ts ++ [t]}
-  where title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed1
-        notes1 = intercalate "; " . filter (/= "") $ E.getEditContents ed2 
-        duration1 = (E.getEditContents ed3) !! 0 
-        t = Task {
-          title = title1,
+  zTime <- getZonedTime
+  let title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed1
+      notes1 = intercalate "; " . filter (/= "") $ E.getEditContents ed2
+      duration1 = (E.getEditContents ed3) !! 0
+  --t <- Task {
+          
+  --      }
+  pure $ s {tasks = ts ++ [Task {title = title1,
           notes = notes1,
-          duration = read duration1
-        }
+          duration = read duration1,
+          startTime = zTime,
+          endTime = zTime}]}
+  --where title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed1
+        --notes1 = intercalate "; " . filter (/= "") $ E.getEditContents ed2 
+        --duration1 = (E.getEditContents ed3) !! 0 
+        
     --startTime = zoneT,
     --endTime = zoneT}
 
@@ -99,7 +106,7 @@ autoRefresh s = do
 syncFetch :: Config -> IO (BChan Tick -> State)
 syncFetch c = do
   d <- getCurrentTime
-  zoneT <- getZonedTime
+  z <- getZonedTime
   pure $ \q ->
     State
       { config = c,
@@ -115,9 +122,9 @@ syncFetch c = do
           [ Task
               { title = "test task 1",
                 notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
-                duration = 20
-                --startTime = zoneT,
-                --endTime = zoneT
+                duration = 20,
+                startTime = z,
+                endTime = z
               }
             --Task
             --  { title = "test task 2",

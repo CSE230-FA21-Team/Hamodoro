@@ -77,9 +77,9 @@ data Task = Task
   { title :: String,
     notes :: String,
     -- TODO
-    duration :: Int
-    --startTime :: ZonedTime,
-    --endTime :: ZonedTime
+    duration :: Int,
+    startTime :: ZonedTime,
+    endTime :: ZonedTime
   }
 
 --makeLenses ''State
