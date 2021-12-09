@@ -12,6 +12,7 @@ module Model
     editor1,
     editor2,
     editor3,
+    panel
   )
 where
 
@@ -49,7 +50,7 @@ data Tick = Tick
 data State = State
   { -- TODO:
     config :: Config,
-    panel :: Panel,
+    _panel :: Panel,
     status :: Status,
     _editor1 :: E.Editor String Widget,
     _editor2 :: E.Editor String Widget,
@@ -70,6 +71,7 @@ data Widget
 data Panel
   = Editor -- TODO: add sheet later
   | Ending
+  | Schedule
   deriving (Eq)
 
 data Status
@@ -97,3 +99,6 @@ editor2 f s = (\x -> s {_editor2 = x}) <$> f (_editor2 s)
 
 editor3 :: Lens' State (E.Editor String Widget)
 editor3 f s = (\x -> s {_editor3 = x}) <$> f (_editor3 s)
+
+panel :: Lens' State Panel
+panel f s = (\x -> s {_panel = x}) <$> f (_panel s)
