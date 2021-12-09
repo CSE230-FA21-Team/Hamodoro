@@ -71,6 +71,7 @@ data Widget
 
 data Panel
   = Editor -- TODO: add sheet later
+  | Ending
   deriving (Eq)
 
 data Task = Task
