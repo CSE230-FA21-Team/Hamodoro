@@ -30,9 +30,9 @@ import qualified Data.Time.Format as F (defaultTimeLocale, formatTime)
 import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
 import qualified Graphics.Vty as V (black, defAttr, magenta)
 import Graphics.Vty.Attributes
-import Model (State (..), Task (..), Widget (..), Name(..))
+import Model
 
-render :: State -> T.Widget Name
+render :: State -> T.Widget Widget
 render s =
   (drawDate s)
     <=> ( C.hCenter $
@@ -40,21 +40,21 @@ render s =
         )
     <=> (drawClear s)
 
-drawDate :: State -> T.Widget Name
+drawDate :: State -> T.Widget Widget
 drawDate s =
   withBorderStyle unicodeRounded . B.border . C.hCenter . padTopBottom 1 $
     hBox [str $ formatDate (day s)]
 
-drawClear :: State -> T.Widget Name
+drawClear :: State -> T.Widget Widget
 drawClear s =
   withBorderStyle unicodeRounded . B.border . C.hCenter $
     hBox [str $ "Clear all tasks (C)"]
 
-drawTasks :: State -> [T.Widget Name]
+drawTasks :: State -> [T.Widget Widget]
 drawTasks s =
   map drawTask (tasks s)
 
-drawTask :: Task -> T.Widget Name
+drawTask :: Task -> T.Widget Widget
 drawTask t =
   taskStyle True . withBorderStyle unicodeRounded . B.border $
     --(sessionTitle <+> dur) <=> B.hBorder <=> note
@@ -75,7 +75,7 @@ formatTime = F.formatTime F.defaultTimeLocale "%F %R"
 formatDate :: Day -> String
 formatDate = F.formatTime F.defaultTimeLocale "%F"
 
-taskStyle :: Bool -> T.Widget Name -> T.Widget Name
+taskStyle :: Bool -> T.Widget Widget -> T.Widget Widget
 taskStyle True =
   updateAttrMap (A.applyAttrMappings [(B.borderAttr, (V.defAttr `withForeColor` V.magenta))])
 taskStyle False = id

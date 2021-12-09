@@ -41,23 +41,13 @@ import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
 import qualified Brick.Focus as F
 import Lib
 import Model
-  ( Panel (Editor),
-    State (..),
-    Task (..),
-    Tick (..),
-    Widget (..),
-    Name (..),
-    editor1,
-    editor2,
-    editor3
-  )
 
 -- import Model.Player
 
 -------------------------------------------------------------------------------
 
-control :: State -> T.BrickEvent Name Tick -> EventM Name (T.Next State)
-control s@State {panel = p} (T.VtyEvent ev) = 
+control :: State -> T.BrickEvent Model.Widget Tick -> EventM Model.Widget (T.Next State)
+control s@State {panel = p} (T.VtyEvent ev) =
   case (p, ev) of
   --   AppEvent Tick -> nextS s =<< liftIO (play O s)
   -- AppEvent Tick -> M.continue =<< liftIO (autoRefresh s)
@@ -70,18 +60,21 @@ control s@State {panel = p} (T.VtyEvent ev) =
                Just Edit2 -> T.handleEventLensed s editor2 E.handleEditorEvent ev
                Just Edit3 -> T.handleEventLensed s editor3 E.handleEditorEvent ev
                Nothing -> return s
+control s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
 control s _ = M.continue s -- Brick.halt s
 
 save :: State -> IO State
-save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do 
+save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
   zTime <- getZonedTime
   let title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed1
       notes1 = intercalate "; " . filter (/= "") $ E.getEditContents ed2
       duration1 = (E.getEditContents ed3) !! 0
   --t <- Task {
-          
+
   --      }
-  pure $ s {tasks = ts ++ [Task {title = title1,
+  pure $ s {
+        status = Running,
+        tasks = ts ++ [Task {title = title1,
           notes = notes1,
           duration = read duration1,
           startTime = zTime,
@@ -89,7 +82,7 @@ save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
   --where title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed1
         --notes1 = intercalate "; " . filter (/= "") $ E.getEditContents ed2 
         --duration1 = (E.getEditContents ed3) !! 0 
-        
+
     --startTime = zoneT,
     --endTime = zoneT}
 
@@ -111,6 +104,7 @@ syncFetch c = do
     State
       { config = c,
         panel = Editor,
+        status = Ready,
         _editor1 = E.editor Edit1 Nothing "",
         _editor2 = E.editor Edit2 Nothing "",
         _editor3 = E.editor Edit3 Nothing "0",

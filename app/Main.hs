@@ -29,7 +29,7 @@ main = do
   res <- customMain initialVty buildVty (Just chan) app (s chan)
   print "exit"
 
-app :: App State Tick Model.Name
+app :: App State Tick Model.Widget
 app =
   App
     { appDraw = drawUI,

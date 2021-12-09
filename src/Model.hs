@@ -8,7 +8,7 @@ module Model
     State (..),
     Tick (..),
     Task (..),
-    Name (..),
+    Status (..),
     editor1,
     editor2,
     editor3
@@ -50,28 +50,33 @@ data State = State
   { -- TODO:
     config :: Config,
     panel :: Panel,
-    _editor1 :: E.Editor String Name,
-    _editor2 :: E.Editor String Name,
-    _editor3 :: E.Editor String Name,
-    _focusRing :: F.FocusRing Name,
+    status :: Status,
+    _editor1 :: E.Editor String Widget,
+    _editor2 :: E.Editor String Widget,
+    _editor3 :: E.Editor String Widget,
+    _focusRing :: F.FocusRing Widget,
     now :: UTCTime,
     day :: Day,
     tasks :: [Task]
   }
 
-data Name 
-  = Edit1
-  | Edit2
-  | Edit3
-  deriving (Ord, Show, Eq)
-
 data Widget
   = Default
+  | Edit1
+  | Edit2
+  | Edit3
   deriving (Show, Eq, Ord)
 
 data Panel
   = Editor -- TODO: add sheet later
   | Ending
+  deriving (Eq)
+
+data Status
+  = Ready
+  | Running
+  | Paused
+  | Stopped
   deriving (Eq)
 
 data Task = Task
@@ -84,11 +89,11 @@ data Task = Task
   }
 
 --makeLenses ''State
-editor1 :: Lens' State (E.Editor String Name)
+editor1 :: Lens' State (E.Editor String Widget)
 editor1 f s = (\x -> s {_editor1 = x}) <$> f (_editor1 s)
 
-editor2 :: Lens' State (E.Editor String Name)
+editor2 :: Lens' State (E.Editor String Widget)
 editor2 f s = (\x -> s {_editor2 = x}) <$> f (_editor2 s)
 
-editor3 :: Lens' State (E.Editor String Name)
+editor3 :: Lens' State (E.Editor String Widget)
 editor3 f s = (\x -> s {_editor3 = x}) <$> f (_editor3 s)

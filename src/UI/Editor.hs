@@ -16,9 +16,9 @@ import Brick.Widgets.Core
   )
 import Brick.Widgets.Edit (renderEditor)
 import qualified Brick.Focus as F
-import Model (Panel (..), State (..), Widget (..), Name(..))
+import Model
 
-render :: State -> T.Widget Name
+render :: State -> T.Widget Widget
 render s =
   withBorderStyle unicodeRounded . B.border $
     (str "Task Title: " <+> (hLimit 20 $ vLimit 5 e1)) <=>
