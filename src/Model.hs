@@ -12,7 +12,7 @@ module Model
     editor1,
     editor2,
     editor3,
-    panel
+    panel,
   )
 where
 
@@ -58,6 +58,7 @@ data State = State
     _focusRing :: F.FocusRing Widget,
     notification :: String,
     now :: UTCTime,
+    countdown :: Int,
     day :: Day,
     tasks :: [Task]
   }

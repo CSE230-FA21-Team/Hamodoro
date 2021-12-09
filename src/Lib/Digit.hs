@@ -1,5 +1,7 @@
 module Lib.Digit
   ( timeToDigitalLines,
+    secondsToDigitLines,
+    secondsToDigitArray,
   )
 where
 
@@ -121,13 +123,13 @@ numberToDigit n =
     _ -> error "Invalid digit"
 
 timeToDigitalLines :: [Int] -> [String]
-timeToDigitalLines [h1, h2, m1, m2] =
+timeToDigitalLines [m1, m2, s1, s2] =
   horizontalFlatten
-    [ numberToDigit h1,
-      numberToDigit h2,
+    [ numberToDigit m1,
+      numberToDigit m2,
       colon,
-      numberToDigit m1,
-      numberToDigit m2
+      numberToDigit s1,
+      numberToDigit s2
     ]
 timeToDigitalLines _ = error "Invalid time"
 
@@ -135,3 +137,16 @@ timeToDigitalLines _ = error "Invalid time"
 -- [["a", "b"], ["c", "d"], ["e", "f"]] -> ["ace", "bdf"]
 horizontalFlatten :: [[String]] -> [String]
 horizontalFlatten xs = map concat (transpose xs)
+
+secondsToDigitArray :: Int -> [Int]
+secondsToDigitArray n =
+  let seconds = n `mod` 60
+      minutes = n `div` 60
+      m1 = minutes `div` 10
+      m2 = minutes `mod` 10
+      s1 = seconds `div` 10
+      s2 = seconds `mod` 10
+   in [m1, m2, s1, s2]
+
+secondsToDigitLines :: Int -> [String]
+secondsToDigitLines n = timeToDigitalLines (secondsToDigitArray n)
