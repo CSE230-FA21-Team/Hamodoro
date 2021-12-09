@@ -69,6 +69,8 @@ data Widget
 
 data Panel
   = Editor -- TODO: add sheet later
+  | Schedule
+  | Clock
   | Ending
   deriving (Eq)
 

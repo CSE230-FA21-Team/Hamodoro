@@ -54,6 +54,7 @@ control s@State {panel = p} (T.VtyEvent ev) =
     (Editor, V.EvKey V.KEsc _) -> M.halt s
     (Editor, V.EvKey (V.KChar '\t') _) -> M.continue (s {_focusRing = F.focusNext (_focusRing s)})
     (Editor, V.EvKey V.KEnter _) -> M.continue =<< liftIO (save s)
+    (Schedule, V.EvKey (V.KChar 'C') _) -> M.continue =<< liftIO (clear s)
     (Editor, _) ->
       M.continue =<< case F.focusGetCurrent (_focusRing s) of
         Just Edit1 -> T.handleEventLensed s editor1 E.handleEditorEvent ev
@@ -62,6 +63,14 @@ control s@State {panel = p} (T.VtyEvent ev) =
         Nothing -> return s
 control s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
 control s _ = M.continue s -- Brick.halt s
+
+clear :: State -> IO State
+clear s = do
+  pure $
+    s
+      {
+        tasks = []
+      }
 
 save :: State -> IO State
 save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
@@ -125,14 +134,65 @@ syncFetch c = do
                 duration = 20,
                 startTime = z,
                 endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
+              },
+            Task
+              { title = "test task 1",
+                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
+                duration = 20,
+                startTime = z,
+                endTime = z
               }
-              --Task
-              --  { title = "test task 2",
-              --    notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque e",
-              --    duration = "40"
-              --startTime = zoneT,
-              --endTime = zoneT
-              --  }
+
+ 
           ]
       }
 
