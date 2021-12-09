@@ -33,6 +33,7 @@ library
       UI.Editor
       UI.Ending
       UI.Schedule
+      UI.Style
       View
   other-modules:
       Paths_hamodoro
