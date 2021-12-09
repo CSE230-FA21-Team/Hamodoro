@@ -21,7 +21,7 @@ import Model
 import qualified UI.Editor as Editor (render)
 import qualified UI.Schedule as Schedule (render)
 
-drawUI :: State -> [T.Widget Widget]
+drawUI :: State -> [T.Widget Name]
 --drawUI s = [Editor.render s]
 drawUI s =
   [ hBox

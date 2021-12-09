@@ -8,11 +8,15 @@ module Model
     State (..),
     Tick (..),
     Task (..),
-    editor,
+    Name (..),
+    editor1,
+    editor2,
+    editor3
   )
 where
 
 import Brick.BChan (BChan, writeBChan)
+import qualified Brick.Focus as F
 import qualified Brick.Widgets.Edit as E
   ( Editor,
     applyEdit,
@@ -25,7 +29,8 @@ import Data.Char (isSpace)
 import Data.Time.Calendar (Day)
 import Data.Time.Clock (DiffTime, UTCTime, diffUTCTime, getCurrentTime, utctDay)
 import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
-import Lens.Micro (Lens', each, filtered, (%~))
+import Lens.Micro
+--import Lens.Micro.TH
 import Prelude hiding ((!!))
 
 -------------------------------------------------------------------------------
@@ -45,11 +50,20 @@ data State = State
   { -- TODO:
     config :: Config,
     panel :: Panel,
-    _editor :: E.Editor String Widget,
+    _editor1 :: E.Editor String Name,
+    _editor2 :: E.Editor String Name,
+    _editor3 :: E.Editor String Name,
+    _focusRing :: F.FocusRing Name,
     now :: UTCTime,
     day :: Day,
     tasks :: [Task]
   }
+
+data Name 
+  = Edit1
+  | Edit2
+  | Edit3
+  deriving (Ord, Show, Eq)
 
 data Widget
   = Default
@@ -62,10 +76,18 @@ data Panel
 data Task = Task
   { title :: String,
     notes :: String,
+    -- TODO
     duration :: Int,
     startTime :: ZonedTime,
     endTime :: ZonedTime
   }
 
-editor :: Lens' State (E.Editor String Widget)
-editor f s = (\x -> s {_editor = x}) <$> f (_editor s)
+--makeLenses ''State
+editor1 :: Lens' State (E.Editor String Name)
+editor1 f s = (\x -> s {_editor1 = x}) <$> f (_editor1 s)
+
+editor2 :: Lens' State (E.Editor String Name)
+editor2 f s = (\x -> s {_editor2 = x}) <$> f (_editor2 s)
+
+editor3 :: Lens' State (E.Editor String Name)
+editor3 f s = (\x -> s {_editor3 = x}) <$> f (_editor3 s)

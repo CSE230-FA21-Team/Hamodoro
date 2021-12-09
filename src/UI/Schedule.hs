@@ -30,9 +30,9 @@ import qualified Data.Time.Format as F (defaultTimeLocale, formatTime)
 import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
 import qualified Graphics.Vty as V (black, defAttr, magenta)
 import Graphics.Vty.Attributes
-import Model (State (..), Task (..), Widget (..))
+import Model (State (..), Task (..), Widget (..), Name(..))
 
-render :: State -> T.Widget Widget
+render :: State -> T.Widget Name
 render s =
   (drawDate s)
     <=> ( C.hCenter $
@@ -40,28 +40,30 @@ render s =
         )
     <=> (drawClear s)
 
-drawDate :: State -> T.Widget Widget
+drawDate :: State -> T.Widget Name
 drawDate s =
   withBorderStyle unicodeRounded . B.border . C.hCenter . padTopBottom 1 $
     hBox [str $ formatDate (day s)]
 
-drawClear :: State -> T.Widget Widget
+drawClear :: State -> T.Widget Name
 drawClear s =
   withBorderStyle unicodeRounded . B.border . C.hCenter $
     hBox [str $ "Clear all tasks (C)"]
 
-drawTasks :: State -> [T.Widget Widget]
+drawTasks :: State -> [T.Widget Name]
 drawTasks s =
   map drawTask (tasks s)
 
-drawTask :: Task -> T.Widget Widget
+drawTask :: Task -> T.Widget Name
 drawTask t =
   taskStyle True . withBorderStyle unicodeRounded . B.border $
+    --(sessionTitle <+> dur) <=> B.hBorder <=> note
     (sessionTitle <+> dur) <=> B.hBorder <=> note <=> time
   where
     sessionTitle = (withAttr (attrName "bold") . str . title) t
     dur = padLeft T.Max . str $ show (duration t) ++ " min"
     note = padBottom (T.Pad 1) (strWrap $ (notes t))
+    --time = padLeft T.Max . str $ (fmap show startTime t) ++ " to " ++ (fmap show endTime t)
     time = padLeft T.Max . str $ (formatTime $ startTime t) ++ " to " ++ (formatTime $ endTime t)
 
 lor :: (Foldable f) => f a -> f a -> f a
@@ -73,7 +75,7 @@ formatTime = F.formatTime F.defaultTimeLocale "%F %R"
 formatDate :: Day -> String
 formatDate = F.formatTime F.defaultTimeLocale "%F"
 
-taskStyle :: Bool -> T.Widget Widget -> T.Widget Widget
+taskStyle :: Bool -> T.Widget Name -> T.Widget Name
 taskStyle True =
   updateAttrMap (A.applyAttrMappings [(B.borderAttr, (V.defAttr `withForeColor` V.magenta))])
 taskStyle False = id
