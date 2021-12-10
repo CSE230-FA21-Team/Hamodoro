@@ -49,9 +49,9 @@ attrMap =
           V.magenta
       ),
       (S.light, V.white `on` V.brightBlack),
-      (S.dark, V.brightBlack `on` V.black),
-      (E.editAttr, V.white `on` V.black),
-      (E.editFocusedAttr, V.brightWhite `on` V.black)
+      (S.dark, V.defAttr `withForeColor` V.white), {-V.brightBlack `on` V.black),-}
+      (E.editAttr, V.defAttr `withForeColor` V.white), {-V.white `on` V.black-}
+      (E.editFocusedAttr, V.defAttr `withForeColor` V.brightWhite) {-V.brightWhite `on` V.black-}
     ]
 
 app :: M.App State Tick Model.Widget
