@@ -120,7 +120,7 @@ numberToDigit n =
     7 -> seven
     8 -> eight
     9 -> nine
-    _ -> error "Invalid digit"
+    _ -> error $ "Invalid digit" ++ (show n)
 
 timeToDigitalLines :: [Int] -> [String]
 timeToDigitalLines [m1, m2, s1, s2] =

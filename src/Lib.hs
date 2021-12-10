@@ -9,6 +9,7 @@ where
 
 import Data.Char (isSpace)
 import Data.Maybe
+import Model (State (..), Task (..))
 import Text.Read
 
 splitOn :: Eq a => a -> [a] -> [[a]]

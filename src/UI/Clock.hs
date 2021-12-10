@@ -24,20 +24,21 @@ import Brick.Widgets.Core
     (<+>),
     (<=>),
   )
-import Control (getLatestTask)
 import Data.Bool (bool)
+import Data.Maybe
 import Data.Time.Calendar (Day)
 import qualified Data.Time.Format as F (defaultTimeLocale, formatTime)
 import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
 import qualified Graphics.Vty as V (black, defAttr, magenta)
-import Lib.Digit
-import Model (State (..), Task (..), Widget (..))
+import Lib.Digit (secondsToDigitLines)
+import Model (State (..), Status (..), Task (..), Widget (..))
 import UI.Style (bold)
 
 render :: State -> T.Widget Widget
 render s =
   (drawSessionTitle s)
-    <=> (C.hCenter $ C.center (drawClock s))
+    <=> padBottom T.Max (C.hCenter $ C.center (drawClock s))
+    <=> drawPause s
 
 renderNumbers :: [String] -> String
 renderNumbers ss = replaceDot (replaceHash (unlines ss))
@@ -48,9 +49,24 @@ renderNumbers ss = replaceDot (replaceHash (unlines ss))
 drawSessionTitle :: State -> T.Widget Widget
 drawSessionTitle s =
   withBorderStyle unicodeRounded . B.border . C.hCenter . padTopBottom 1 $
-    vBox [C.hCenter . str $ "Hamodoro Focus Session", withAttr bold (C.hCenter . str $ title (last $ tasks s))]
+    vBox
+      [ C.hCenter . str $
+          ( case status s of
+              Running -> "Hamodoro Focus Session"
+              Paused -> "Session Paused"
+              _ -> "ERROR STATE"
+          ),
+        withAttr bold (C.hCenter . str $ title (fromJust $ task s))
+      ]
 
 drawClock :: State -> T.Widget Widget
 drawClock s =
   withBorderStyle unicodeRounded . B.border . C.hCenter . padTopBottom 1 $
     hBox [str $ renderNumbers (secondsToDigitLines $ countdown s)]
+
+drawPause :: State -> T.Widget Widget
+drawPause s =
+  withBorderStyle unicodeRounded . B.border . C.hCenter $
+    ( str "[p]: Pause / Resume timer"
+        <=> str "[Esc]: quit"
+    )

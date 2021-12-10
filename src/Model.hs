@@ -47,8 +47,7 @@ data Tick = Tick
 -------------------------------------------------------------------------------
 
 data State = State
-  {
-    config :: Config,
+  { config :: Config,
     _panel :: Panel,
     status :: Status,
     _editor1 :: E.Editor String Widget,
@@ -59,6 +58,7 @@ data State = State
     now :: UTCTime,
     countdown :: Int,
     day :: Day,
+    task :: Maybe Task,
     tasks :: [Task]
   }
 
