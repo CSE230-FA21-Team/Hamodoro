@@ -49,12 +49,12 @@ drawDate s =
 drawDelete :: State -> T.Widget Widget
 drawDelete s =
   withBorderStyle unicodeRounded . B.border . C.hCenter $
-    hBox [str $ "Delete the earliest task (D)"]
+    hBox [str $ "Delete the earliest task (d)"]
 
 drawClear :: State -> T.Widget Widget
 drawClear s =
   withBorderStyle unicodeRounded . B.border . C.hCenter $
-    hBox [str $ "Clear all tasks (C)"]
+    hBox [str $ "Clear all tasks (c)"]
 
 drawTasks :: State -> [T.Widget Widget]
 drawTasks s =

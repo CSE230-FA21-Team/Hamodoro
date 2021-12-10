@@ -54,26 +54,25 @@ control s@State {_panel = p} (T.VtyEvent ev) =
     -- AppEvent Tick -> M.continue =<< liftIO (autoRefresh s)
     -- AppEvent s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
     (Editor, V.EvKey V.KEsc _) -> M.halt s
-    --(Editor, V.EvKey (V.KChar '\t') _) -> M.continue (s {_focusRing = F.focusNext (_focusRing s)})
     (Editor, V.EvKey (V.KChar '\t') _) -> M.continue (s {_panel = Schedule})
     (Editor, V.EvKey V.KDown _) -> M.continue (s {_focusRing = F.focusNext (_focusRing s)})
     (Editor, V.EvKey V.KUp _) -> M.continue (s {_focusRing = F.focusPrev (_focusRing s)})
-    (Editor, V.EvKey V.KEnter _) -> M.continue =<< liftIO (save s)
     (Editor, _) ->
       M.continue =<< case F.focusGetCurrent (_focusRing s) of
         Just Edit1 -> T.handleEventLensed s editor1 E.handleEditorEvent ev
         Just Edit2 -> T.handleEventLensed s editor2 E.handleEditorEvent ev
         Just Edit3 -> T.handleEventLensed s editor3 E.handleEditorEvent ev
         Nothing -> return s
-    (Schedule, V.EvKey (V.KChar 'C') _) -> M.continue =<< liftIO (clear s)
-    (Schedule, V.EvKey (V.KChar 'D') _) -> M.continue =<< liftIO (deleteOne s)
+    (Schedule, V.EvKey (V.KChar 'c') _) -> M.continue =<< liftIO (clear s)
+    --(Schedule, V.EvKey (V.KChar 'D') _) -> M.continue =<< liftIO (deleteOne s)
+    (Schedule, V.EvKey V.KEnter _) -> M.continue =<< liftIO (save s)
     (Schedule, V.EvKey V.KEsc _) -> M.halt s
     (Schedule, V.EvKey (V.KChar '\t') _) -> M.continue (s {_panel = Editor})
     (Schedule, _) -> M.continue s
     (Clock, V.EvKey V.KEsc _) -> M.halt s
     (Clock, _) -> M.continue s
     (Ending, V.EvKey V.KEsc _) -> M.halt s
-    (Ending, V.EvKey (V.KChar 'N') _) -> M.continue =<< liftIO (restart s)
+    (Ending, V.EvKey (V.KChar 'n') _) -> M.continue =<< liftIO (restart s)
     (Ending, _) -> M.continue s  
 control s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
 control s _ = M.continue s -- Brick.halt s
@@ -106,8 +105,8 @@ save s@State {tasks = ts, _editor1 = ed1, _editor2 = ed2, _editor3 = ed3} = do
   tz <- getCurrentTimeZone
   utcTime <- getCurrentTime
 
-  let title1 = intercalate "; " . filter (/= "") $ E.getEditContents ed1
-      notes1 = intercalate "; " . filter (/= "") $ E.getEditContents ed2
+  let title1 = unlines (E.getEditContents ed1)
+      notes1 = unlines (E.getEditContents ed2)
       zTime = utcToZonedTime tz utcTime
       duration1 = (E.getEditContents ed3) !! 0
   --case readMaybe duration1 of

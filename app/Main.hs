@@ -33,7 +33,7 @@ app :: App State Tick Model.Widget
 app =
   App
     { appDraw = drawUI,
-      appChooseCursor = const . const Nothing,
+      appChooseCursor = appCursor,
       appHandleEvent = control,
       appStartEvent = return,
       appAttrMap = const (attrMap defAttr [])
