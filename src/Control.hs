@@ -35,12 +35,15 @@ import qualified Brick.Widgets.Edit as E
 import Config (Config)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.List (find, intercalate)
+import Data.Maybe
 import Data.Time.Clock (DiffTime, UTCTime, addUTCTime, diffUTCTime, getCurrentTime, nominalDiffTimeToSeconds, utctDay)
 import Data.Time.LocalTime (ZonedTime (..), getCurrentTimeZone, getZonedTime, utcToLocalTime, utcToZonedTime, zonedTimeToUTC)
 import qualified Graphics.Vty as V
 import Lens.Micro
 import Lib
 import Model
+import System.Info (os)
+import System.Process
 import Text.Read
 
 -- import Model.Player
@@ -74,7 +77,7 @@ control s@State {_panel = p} (T.VtyEvent ev) =
     (Clock, _) -> M.continue s
     (Ending, V.EvKey V.KEsc _) -> M.halt s
     (Ending, V.EvKey (V.KChar 'N') _) -> M.continue =<< liftIO (restart s)
-    (Ending, _) -> M.continue s  
+    (Ending, _) -> M.continue s
 control s (T.AppEvent Tick) = M.continue =<< liftIO (autoRefresh s)
 control s _ = M.continue s -- Brick.halt s
 
@@ -89,8 +92,7 @@ restart :: State -> IO State
 restart s = do
   pure $
     s
-      {
-        status = Ready,
+      { status = Ready,
         _panel = Editor
       }
 
@@ -160,13 +162,21 @@ autoRefresh s = do
               { now = d,
                 countdown = floor $ toRational $ diff
               }
-        else pure $ s {now = d, status = Finished, _panel = Ending}
+        else onComplete s
 
 getLatestTask :: State -> IO Task
 getLatestTask s = do
   let ts = tasks s
   let t = last ts
   pure t
+
+onComplete :: State -> IO State
+onComplete s = do
+  d <- getCurrentTime
+  if os == "darwin"
+    then runCommand $ "osascript -e 'display notification \"You have finished a focus session! Now take a break.\" with title \"Hamodoro\" subtitle \"Focus Session Complete!\"'"
+    else runCommand $ "notify-send \"You have finished a focus session! Now take a break.\""
+  pure $ s {now = d, status = Finished, _panel = Ending}
 
 syncFetch :: Config -> IO (BChan Tick -> State)
 syncFetch c = do
