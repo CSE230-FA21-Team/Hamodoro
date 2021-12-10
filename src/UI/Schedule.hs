@@ -27,16 +27,19 @@ import Brick.Widgets.Core
 import Data.Bool (bool)
 import Data.Time.Calendar (Day)
 import qualified Data.Time.Format as F (defaultTimeLocale, formatTime)
-import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
+import Data.Time.LocalTime (ZonedTime (..), getZonedTime, utcToZonedTime)
 import qualified Graphics.Vty as V (black, defAttr, magenta)
 import Graphics.Vty.Attributes
 import Model
+    ( Task(title, duration, notes, startTime, endTime),
+      Widget,
+      State(State, day, now, tasks) )
 
 render :: State -> T.Widget Widget
 render s =
   (drawDate s)
-    <=> (drawDelete s)
-    <=> ( C.hCenter $
+   -- <=> (drawDelete s)
+    <=> padBottom T.Max ( C.hCenter $
             vBox (drawTasks s `orEmpty` [C.center $ str "No Task Done Yet"])
         )
     <=> (drawClear s)
@@ -44,21 +47,24 @@ render s =
 drawDate :: State -> T.Widget Widget
 drawDate s =
   withBorderStyle unicodeRounded . B.border . C.hCenter . padTopBottom 1 $
-    hBox [str $ formatDate (day s)]
+    hBox [str (formatDate $ day s)]
 
 drawDelete :: State -> T.Widget Widget
 drawDelete s =
   withBorderStyle unicodeRounded . B.border . C.hCenter $
-    hBox [str $ "Delete the earliest task (D)"]
+    hBox [str "Delete the earliest task (D)"]
 
 drawClear :: State -> T.Widget Widget
 drawClear s =
   withBorderStyle unicodeRounded . B.border . C.hCenter $
-    hBox [str $ "Clear all tasks (C)"]
+    hBox [str "Clear all tasks (C)"]
 
 drawTasks :: State -> [T.Widget Widget]
-drawTasks s =
-  map drawTask (tasks s)
+drawTasks s@State {tasks = ts} = map drawTask (reverse ts)
+  -- case (length ts) > 3 of
+    --True -> map drawTask (drop (length ts - 3) ts)
+    --False -> map drawTask ts
+    
 
 drawTask :: Task -> T.Widget Widget
 drawTask t =
