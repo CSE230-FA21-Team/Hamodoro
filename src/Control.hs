@@ -42,6 +42,7 @@ import qualified Graphics.Vty as V
 import Lens.Micro
 import Lib
 import Model
+import System.Info (os)
 import System.Process
 import Text.Read
 
@@ -172,7 +173,9 @@ getLatestTask s = do
 onComplete :: State -> IO State
 onComplete s = do
   d <- getCurrentTime
-  _ <- runCommand $ "osascript -e 'display notification \"You have finished a focus session! Now take a break.\" with title \"Hamodoro\" subtitle \"Focus Session Complete!\"'"
+  if os == "darwin"
+    then runCommand $ "osascript -e 'display notification \"You have finished a focus session! Now take a break.\" with title \"Hamodoro\" subtitle \"Focus Session Complete!\"'"
+    else runCommand $ "notify-send \"You have finished a focus session! Now take a break.\""
   pure $ s {now = d, status = Finished, _panel = Ending}
 
 syncFetch :: Config -> IO (BChan Tick -> State)
