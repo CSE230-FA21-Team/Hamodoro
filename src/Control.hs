@@ -53,7 +53,7 @@ control s@State {_panel = p} (T.VtyEvent ev) =
         Just Edit2 -> T.handleEventLensed s editor2 E.handleEditorEvent ev
         Just Edit3 -> T.handleEventLensed s editor3 E.handleEditorEvent ev
         Nothing -> return s
-    (Schedule, V.EvKey (V.KChar 'c') _) -> M.continue =<< liftIO (clear s)
+    (Schedule, V.EvKey (V.KChar 'c') _) -> M.continue =<< liftIO (onClear s)
     (Schedule, V.EvKey V.KEnter _) -> M.continue =<< liftIO (onStart s)
     (Schedule, V.EvKey V.KEsc _) -> M.halt s
     (Schedule, V.EvKey (V.KChar '\t') _) -> M.continue (s {_panel = Editor})
@@ -62,31 +62,24 @@ control s@State {_panel = p} (T.VtyEvent ev) =
     (Clock, V.EvKey (V.KChar 'p') _) -> M.continue =<< liftIO (onPause s)
     (Clock, _) -> M.continue s
     (Ending, V.EvKey V.KEsc _) -> M.halt s
-    (Ending, V.EvKey (V.KChar 'n') _) -> M.continue =<< liftIO (restart s)
+    (Ending, V.EvKey (V.KChar 'n') _) -> M.continue =<< liftIO (onRestart s)
     (Ending, _) -> M.continue s
 control s (T.AppEvent Tick) = M.continue =<< liftIO (onTick s)
 control s _ = M.continue s
 
-clear :: State -> IO State
-clear s =
+onClear :: State -> IO State
+onClear s =
   pure $
     s
       { tasks = []
       }
 
-restart :: State -> IO State
-restart s =
+onRestart :: State -> IO State
+onRestart s =
   pure $
     s
       { status = Ready,
         _panel = Editor
-      }
-
-deleteOne :: State -> IO State
-deleteOne s@State {tasks = ts} =
-  pure $
-    s
-      { tasks = if (length ts) >= 1 then (tail ts) else []
       }
 
 onStart :: State -> IO State
@@ -200,6 +193,3 @@ initState c = do
                 }
             ]
         }
-
-appCursor :: State -> [T.CursorLocation Model.Widget] -> Maybe (T.CursorLocation Model.Widget)
-appCursor = F.focusRingCursor _focusRing
