@@ -76,7 +76,7 @@ orEmpty :: (Foldable f) => f a -> f a -> f a
 orEmpty a b = bool a b (null a)
 
 formatTime :: ZonedTime -> String
-formatTime = F.formatTime F.defaultTimeLocale "%F %R"
+formatTime = F.formatTime F.defaultTimeLocale "%m/%d %R"
 
 formatDate :: Day -> String
 formatDate = F.formatTime F.defaultTimeLocale "%F"
