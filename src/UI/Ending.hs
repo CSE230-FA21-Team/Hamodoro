@@ -41,4 +41,4 @@ drawBreak s =
 drawNew :: State -> T.Widget Widget
 drawNew s =
   withBorderStyle unicodeRounded . B.border . C.hCenter $
-    hBox [str $ "New Session (N)"]
+    hBox [str $ "New Session (n)"]

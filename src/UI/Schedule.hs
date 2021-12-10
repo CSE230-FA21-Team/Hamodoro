@@ -38,7 +38,6 @@ import Model
 render :: State -> T.Widget Widget
 render s =
   (drawDate s)
-   -- <=> (drawDelete s)
     <=> padBottom T.Max ( C.hCenter $
             vBox (drawTasks s `orEmpty` [C.center $ str "No Task Done Yet"])
         )
@@ -52,30 +51,24 @@ drawDate s =
 drawDelete :: State -> T.Widget Widget
 drawDelete s =
   withBorderStyle unicodeRounded . B.border . C.hCenter $
-    hBox [str "Delete the earliest task (D)"]
+    hBox [str $ "Delete the earliest task (d)"]
 
 drawClear :: State -> T.Widget Widget
 drawClear s =
   withBorderStyle unicodeRounded . B.border . C.hCenter $
-    hBox [str "Clear all tasks (C)"]
+    hBox [str $ "Clear all tasks (c)"]
 
 drawTasks :: State -> [T.Widget Widget]
 drawTasks s@State {tasks = ts} = map drawTask (reverse ts)
-  -- case (length ts) > 3 of
-    --True -> map drawTask (drop (length ts - 3) ts)
-    --False -> map drawTask ts
-    
 
 drawTask :: Task -> T.Widget Widget
 drawTask t =
   taskStyle True . withBorderStyle unicodeRounded . B.border $
-    --(sessionTitle <+> dur) <=> B.hBorder <=> note
     (sessionTitle <+> dur) <=> B.hBorder <=> note <=> time
   where
     sessionTitle = (withAttr (attrName "bold") . str . title) t
     dur = padLeft T.Max . str $ show (duration t) ++ " min"
     note = padBottom (T.Pad 1) (strWrap $ (notes t))
-    --time = padLeft T.Max . str $ (fmap show startTime t) ++ " to " ++ (fmap show endTime t)
     time = padLeft T.Max . str $ (formatTime $ startTime t) ++ " to " ++ (formatTime $ endTime t)
 
 orEmpty :: (Foldable f) => f a -> f a -> f a

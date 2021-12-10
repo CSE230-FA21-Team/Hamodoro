@@ -31,7 +31,6 @@ import Data.Time.Calendar (Day)
 import Data.Time.Clock (DiffTime, UTCTime, diffUTCTime, getCurrentTime, utctDay)
 import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
 import Lens.Micro
---import Lens.Micro.TH
 import Prelude hiding ((!!))
 
 -------------------------------------------------------------------------------
@@ -48,7 +47,7 @@ data Tick = Tick
 -------------------------------------------------------------------------------
 
 data State = State
-  { -- TODO:
+  {
     config :: Config,
     _panel :: Panel,
     status :: Status,
@@ -71,7 +70,7 @@ data Widget
   deriving (Show, Eq, Ord)
 
 data Panel
-  = Editor -- TODO: add sheet later
+  = Editor
   | Schedule
   | Clock
   | Ending
@@ -87,13 +86,11 @@ data Status
 data Task = Task
   { title :: String,
     notes :: String,
-    -- TODO
     duration :: Int,
     startTime :: ZonedTime,
     endTime :: ZonedTime
   }
 
---makeLenses ''State
 editor1 :: Lens' State (E.Editor String Widget)
 editor1 f s = (\x -> s {_editor1 = x}) <$> f (_editor1 s)
 
