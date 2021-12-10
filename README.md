@@ -77,12 +77,17 @@ Then we are implementing the UI based on the functionalities of our program usin
 ├── package.yaml
 ├── src
 │   ├── Control.hs
-│   ├── Main.hs
-│   ├── Model
-│   │   ├── Board.hs
-│   │   ├── Player.hs
-│   │   └── Score.hs
+│   ├── Config.hs
+│   ├── Lib.hs
+│   ├── Lib.hs
+│   │   └── Digit.hs
 │   ├── Model.hs
+│   ├── UI
+│   │   ├── Clock.hs
+│   │   ├── Editor.hs
+│   │   ├── Ending.hs
+│   │   ├── Schedule.hs
+│   │   └── Style.hs
 │   └── View.hs
 ├── stack.yaml
 ├── stack.yaml.lock
