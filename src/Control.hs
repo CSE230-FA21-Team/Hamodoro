@@ -35,12 +35,15 @@ import qualified Brick.Widgets.Edit as E
 import Config (Config)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.List (find, intercalate)
+import Data.Maybe
 import Data.Time.Clock (DiffTime, UTCTime, addUTCTime, diffUTCTime, getCurrentTime, nominalDiffTimeToSeconds, utctDay)
 import Data.Time.LocalTime (ZonedTime (..), getCurrentTimeZone, getZonedTime, utcToLocalTime, utcToZonedTime, zonedTimeToUTC)
 import qualified Graphics.Vty as V
 import Lens.Micro
 import Lib
 import Model
+import System.Info (os)
+import System.Process
 import Text.Read
 
 -- import Model.Player
@@ -88,8 +91,7 @@ restart :: State -> IO State
 restart s = do
   pure $
     s
-      {
-        status = Ready,
+      { status = Ready,
         _panel = Editor
       }
 
@@ -159,13 +161,21 @@ autoRefresh s = do
               { now = d,
                 countdown = floor $ toRational $ diff
               }
-        else pure $ s {now = d, status = Finished, _panel = Ending}
+        else onComplete s
 
 getLatestTask :: State -> IO Task
 getLatestTask s = do
   let ts = tasks s
   let t = last ts
   pure t
+
+onComplete :: State -> IO State
+onComplete s = do
+  d <- getCurrentTime
+  if os == "darwin"
+    then runCommand $ "osascript -e 'display notification \"You have finished a focus session! Now take a break.\" with title \"Hamodoro\" subtitle \"Focus Session Complete!\"'"
+    else runCommand $ "notify-send \"You have finished a focus session! Now take a break.\""
+  pure $ s {now = d, status = Finished, _panel = Ending}
 
 syncFetch :: Config -> IO (BChan Tick -> State)
 syncFetch c = do
@@ -187,55 +197,6 @@ syncFetch c = do
         -- TODO: change tasks back to []
         tasks =
           [ Task
-              { title = "test task 1",
-                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
-                duration = 20,
-                startTime = z,
-                endTime = z
-              },
-            Task
-              { title = "test task 1",
-                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
-                duration = 20,
-                startTime = z,
-                endTime = z
-              },
-            Task
-              { title = "test task 1",
-                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
-                duration = 20,
-                startTime = z,
-                endTime = z
-              },
-            Task
-              { title = "test task 1",
-                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
-                duration = 20,
-                startTime = z,
-                endTime = z
-              },
-            Task
-              { title = "test task 1",
-                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
-                duration = 20,
-                startTime = z,
-                endTime = z
-              },
-            Task
-              { title = "test task 1",
-                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
-                duration = 20,
-                startTime = z,
-                endTime = z
-              },
-            Task
-              { title = "test task 1",
-                notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
-                duration = 20,
-                startTime = z,
-                endTime = z
-              },
-            Task
               { title = "test task 1",
                 notes = "Lorem ipsum dolor sit amet, ubique neglegentur eu mel, dicat aeque evertitur mei id.",
                 duration = 20,

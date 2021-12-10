@@ -3,7 +3,7 @@ module UI.Ending
   )
 where
 
-import qualified Brick.Types as T (Widget)
+import qualified Brick.Types as T
 import qualified Brick.Widgets.Border as B (border)
 import Brick.Widgets.Border.Style (unicodeRounded)
 import qualified Brick.Widgets.Center as C (center, hCenter)

@@ -33,6 +33,7 @@ library
       UI.Editor
       UI.Ending
       UI.Schedule
+      UI.Style
       View
   other-modules:
       Paths_hamodoro
@@ -46,6 +47,7 @@ library
     , containers
     , directory
     , microlens
+    , process
     , random
     , req
     , text
@@ -71,6 +73,7 @@ executable hamodoro
     , directory
     , hamodoro
     , microlens
+    , process
     , random
     , req
     , text
@@ -98,6 +101,7 @@ test-suite hamodoro-test
     , hamodoro
     , hspec
     , microlens
+    , process
     , random
     , req
     , text

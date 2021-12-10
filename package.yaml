@@ -26,6 +26,7 @@ dependencies:
 - containers
 - directory
 - microlens
+- process
 - random
 - req
 - text
