@@ -59,10 +59,3 @@ drawNotification s =
     (str "[Up/Down]: switch between editors"
     <=> str "[Tab]: finish editing, then [Enter] to start session"
     <=> str "[Esc]: quit")
---renderEditor (str . unlines) (True) (_editor s)
--- <=>
---withBorderStyle unicodeRounded . B.border $
---  renderEditor (str . unlines) (True) (_editorN s)
--- <=>
---withBorderStyle unicodeRounded . B.border $
---  renderEditor (str . unlines) (True) (_editorD s)

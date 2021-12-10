@@ -45,9 +45,3 @@ drawUI s =
             padLeftRight 1 (Schedule.render s)
           ]
       ]
-
---   [ hBox
---       [ padLeftRight 1 (Sheet.render s)
---       , padLeftRight 1 (vBox [Stats.render s, Editor.render s])
---       ]
---   ]
