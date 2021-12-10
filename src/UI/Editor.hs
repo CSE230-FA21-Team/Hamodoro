@@ -46,8 +46,8 @@ drawDuration :: State -> T.Widget Widget
 drawDuration s =
   withBorderStyle unicodeRounded . B.border $
     hBox
-      [ str "Duration: " <+> vLimit 1 e3
-          <=> str (notification s)
+      [ str "Duration: " <+> vLimit 1 (e3),
+        str (notification s)
       ]
   where
     e3 = F.withFocusRing (_focusRing s) (renderEditor (str . unlines)) (_editor3 s)
