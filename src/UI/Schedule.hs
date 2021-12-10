@@ -31,16 +31,19 @@ import Data.Time.LocalTime (ZonedTime (..), getZonedTime, utcToZonedTime)
 import qualified Graphics.Vty as V (black, defAttr, magenta)
 import Graphics.Vty.Attributes
 import Model
-    ( Task(title, duration, notes, startTime, endTime),
-      Widget,
-      State(State, day, now, tasks) )
+  ( State (State, day, now, tasks),
+    Task (duration, endTime, notes, startTime, title),
+    Widget,
+  )
 
 render :: State -> T.Widget Widget
 render s =
   (drawDate s)
-    <=> padBottom T.Max ( C.hCenter $
-            vBox (drawTasks s `orEmpty` [C.center $ str "No Task Done Yet"])
-        )
+    <=> padBottom
+      T.Max
+      ( C.hCenter $
+          vBox (drawTasks s `orEmpty` [C.center $ str "No Task Done Yet"])
+      )
     <=> (drawClear s)
 
 drawDate :: State -> T.Widget Widget

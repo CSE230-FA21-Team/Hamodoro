@@ -24,13 +24,13 @@ import Brick.Widgets.Core
     (<+>),
     (<=>),
   )
-import Control (getLatestTask)
 import Data.Bool (bool)
+import Data.Maybe
 import Data.Time.Calendar (Day)
 import qualified Data.Time.Format as F (defaultTimeLocale, formatTime)
 import Data.Time.LocalTime (ZonedTime (..), getZonedTime)
 import qualified Graphics.Vty as V (black, defAttr, magenta)
-import Lib.Digit
+import Lib.Digit (secondsToDigitLines)
 import Model (State (..), Task (..), Widget (..))
 import UI.Style (bold)
 
@@ -48,7 +48,7 @@ renderNumbers ss = replaceDot (replaceHash (unlines ss))
 drawSessionTitle :: State -> T.Widget Widget
 drawSessionTitle s =
   withBorderStyle unicodeRounded . B.border . C.hCenter . padTopBottom 1 $
-    vBox [C.hCenter . str $ "Hamodoro Focus Session", withAttr bold (C.hCenter . str $ title (last $ tasks s))]
+    vBox [C.hCenter . str $ "Hamodoro Focus Session", withAttr bold (C.hCenter . str $ title (fromJust $ task s))]
 
 drawClock :: State -> T.Widget Widget
 drawClock s =

@@ -33,6 +33,12 @@ drawUI s =
             padLeftRight 1 (Schedule.render s)
           ]
       ]
+    Paused ->
+      [ hBox
+          [ padLeftRight 1 (Clock.render s),
+            padLeftRight 1 (Schedule.render s)
+          ]
+      ]
     Running ->
       [ hBox
           [ padLeftRight 1 (Clock.render s),

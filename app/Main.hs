@@ -30,7 +30,7 @@ main = do
       threadDelay 100000 -- decides how fast your game moves
   let buildVty = V.mkVty V.defaultConfig
   initialVty <- buildVty
-  s <- syncFetch c
+  s <- initState c
   res <- M.customMain initialVty buildVty (Just chan) app (s chan)
   print "exit"
 
