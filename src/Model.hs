@@ -74,14 +74,14 @@ data Panel
   | Schedule
   | Clock
   | Ending
-  deriving (Eq)
+  deriving (Show, Eq)
 
 data Status
   = Ready
   | Running
   | Paused
   | Finished
-  deriving (Eq)
+  deriving (Show, Eq)
 
 data Task = Task
   { title :: String,
@@ -90,6 +90,7 @@ data Task = Task
     startTime :: ZonedTime,
     endTime :: ZonedTime
   }
+  deriving (Show)
 
 editor1 :: Lens' State (E.Editor String Widget)
 editor1 f s = (\x -> s {_editor1 = x}) <$> f (_editor1 s)
